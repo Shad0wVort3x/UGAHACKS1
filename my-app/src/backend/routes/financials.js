@@ -190,4 +190,42 @@ router.get('/year-end-comparison/:companyId/:ticker', async (req, res) => {
     }
 });
 
+// Fetch player stats
+router.get('/player-stats/:companyId', async (req, res) => {
+    try {
+        const { companyId } = req.params;
+        const company = await Company.findById(companyId);
+        if (!company) return res.status(404).json({ msg: 'Company not found' });
+
+        res.json(company);
+    } catch (error) {
+        console.error('Error fetching player stats:', error.message);
+        res.status(500).json({ error: 'Failed to fetch player stats' });
+    }
+});
+
+// Handle quiz questions
+router.post('/quiz/:companyId', async (req, res) => {
+    try {
+        const { companyId } = req.params;
+        const { questionId, answer } = req.body;
+
+        // Assume you have a function to validate the answer
+        const isCorrect = validateAnswer(questionId, answer);
+
+        const company = await Company.findById(companyId);
+        if (!company) return res.status(404).json({ msg: 'Company not found' });
+
+        if (isCorrect) {
+            company.knowledgePoints = (company.knowledgePoints || 0) + 1;
+        }
+
+        await company.save();
+        res.json({ isCorrect, knowledgePoints: company.knowledgePoints });
+    } catch (error) {
+        console.error('Error handling quiz question:', error.message);
+        res.status(500).json({ error: 'Failed to handle quiz question' });
+    }
+});
+
 module.exports = router;
