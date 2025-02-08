@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@testing-library/react": "^16.2.0",
+    "axios": "^1.7.9",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "mongodb": "^6.13.0",
