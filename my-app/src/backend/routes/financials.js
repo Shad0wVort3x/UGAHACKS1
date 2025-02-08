@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const multer = require('multer');
 const Company = require('../models/Company');
-const parseBalanceSheet = require('../utils/parseBalanceSheet');
+const parseBalanceSheet = require('../util/parseBalanceSheet');
 require('dotenv').config();
 
 const router = express.Router();
