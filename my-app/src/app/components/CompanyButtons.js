@@ -19,6 +19,7 @@ const CompanyButtons = () => {
     };
   return (
     <div className="button-container">
+    <input type="text" id="ticker" name="ticker" placeholder="e.g., AAPL" />
       <button className="company-button">Select Company</button>
       <button className="company-button" onClick={handleUploadClick}>Upload Company (PDF)</button>
       <input type="file" ref={fileInput} style={{display: "none"}} onChange={handleFileChange}/>

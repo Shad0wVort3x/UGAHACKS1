@@ -1,3 +1,4 @@
+import React from 'react';
 import './App.css';
 import Header from './app/components/Header';
 import CompanyButtons from './app/components/CompanyButtons';
@@ -9,13 +10,14 @@ function App() {
   return (
     <div className="App">
       <Header />
-      <div>
-          {isLoggedin && <CompanyButtons />}
-      </div>
+      {isLoggedin && (
+        <div className="ticker-container">
+          <CompanyButtons />
+        </div>
+      )}
       <Footer />
     </div>
   );
 }
 
 export default App;
-

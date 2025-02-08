@@ -11,5 +11,5 @@ export default function Header({logoutHandler}) {
         <button className="header-button">REGISTER</button>
       </div>
     </header>
-    );
+  );
 }
