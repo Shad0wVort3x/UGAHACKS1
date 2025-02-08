@@ -10,12 +10,15 @@ export const UserProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('auth-token');
-    if (token) {
-      setUserData(prev => ({
-        ...prev,
-        token: token,
-      }));
+    const storedUserData = localStorage.getItem('userData');
+    if (storedUserData) {
+      try {
+        const parsedUserData = JSON.parse(storedUserData);
+        setUserData(parsedUserData);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error("Error parsing stored user data:", error);
+      }
     }
   }, []);
 

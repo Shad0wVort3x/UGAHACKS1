@@ -1,11 +1,13 @@
 import React, { useState, useContext } from 'react';
 import './Header.css';
 import Login from './Login';
+import Register from './Register';
 import UserContext from './UserContext';
 
 export default function Header({ logoutHandler }) {
   const { isLoggedIn } = useContext(UserContext);
   const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
 
   console.log("isLoggedIn:", isLoggedIn); // Add this line to debug
 
@@ -22,12 +24,13 @@ export default function Header({ logoutHandler }) {
           ) : (
             <>
               <button className="header-button" onClick={() => setShowLogin(true)}>LOGIN</button>
-              <button className="header-button">REGISTER</button>
+              <button className="header-button" onClick={() => setShowRegister(true)}>REGISTER</button>
             </>
           )}
         </div>
       </header>
       <Login trigger={showLogin} setTrigger={setShowLogin} />
+      <Register trigger={showRegister} setTrigger={setShowRegister} />
     </>
   );
 }
