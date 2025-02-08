@@ -10,9 +10,9 @@ const FMP_API_KEY = process.env.FMP_API_KEY;
 const upload = multer({ dest: 'uploads/' });
 
 // Fetch and store only Year 0 balance sheet
-router.get('/initialize-company/:ticker/:year', async (req, res) => {
+router.get('/initialize-company/:ticker/:year/:userId', async (req, res) => {
     try {
-        const { ticker, year } = req.params;
+        const { ticker, year, userId } = req.params;
         const url = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?apikey=${FMP_API_KEY}`;
         
         const response = await axios.get(url);
@@ -38,6 +38,7 @@ router.get('/initialize-company/:ticker/:year', async (req, res) => {
             stockPrice: data.stockPrice || 0,
             currentYear: parseInt(year),
             eventsCompleted: 0,
+            userId: userId, // Store userId
         });
 
         await companyData.save();
@@ -83,8 +84,9 @@ router.get('/compare/:ticker/:year', async (req, res) => {
 });
 
 // Handle file uploads and parse balance sheet data
-router.post('/upload-balance-sheet', upload.single('file'), async (req, res) => {
+router.post('/upload-balance-sheet/:userId', upload.single('file'), async (req, res) => {
     try {
+        const { userId } = req.params;
         const file = req.file;
         // Parse the file and extract balance sheet data
         const data = await parseBalanceSheet(file.path);
@@ -104,6 +106,7 @@ router.post('/upload-balance-sheet', upload.single('file'), async (req, res) => 
             stockPrice: data.stockPrice || 0,
             currentYear: data.year,
             eventsCompleted: 0,
+            userId: userId, // Store userId
         });
 
         await companyData.save();
