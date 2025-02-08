@@ -5,11 +5,17 @@ import Register from './Register';
 import UserContext from './UserContext';
 
 export default function Header({ logoutHandler }) {
-  const { isLoggedIn } = useContext(UserContext);
+  const { isLoggedIn, setIsLoggedIn, setUser } = useContext(UserContext);
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
 
   console.log("isLoggedIn:", isLoggedIn); // Debugging line
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUser(null);
+    localStorage.removeItem('userData');
+  };
 
   return (
     <>
@@ -20,7 +26,7 @@ export default function Header({ logoutHandler }) {
         <div className="header-center">Truist - Gamify</div>
         <div className="header-right">
           {isLoggedIn ? (
-            <button className="header-button" onClick={logoutHandler}>LOGOUT</button>
+            <button className="header-button" onClick={handleLogout}>LOGOUT</button>
           ) : (
             <>
               <button className="header-button" onClick={() => setShowLogin(true)}>LOGIN</button>
