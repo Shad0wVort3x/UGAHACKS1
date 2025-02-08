@@ -3,10 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+<<<<<<< Updated upstream
     "axios": "^0.21.1",
     "cra-template": "1.2.0",
     "framer-motion": "^12.4.1",
     "multer": "^1.4.5-lts.1",
+=======
+    "bcrypt": "^5.1.1",
+    "cra-template": "1.2.0",
+    "framer-motion": "^12.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.10.0",
+>>>>>>> Stashed changes
     "pdf-parse": "^1.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
