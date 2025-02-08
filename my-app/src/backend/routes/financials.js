@@ -170,6 +170,16 @@ router.get('/year-end-comparison/:companyId/:ticker', async (req, res) => {
             return res.status(404).json({ msg: 'Comparison balance sheet data not found' });
         }
 
+        // Calculate financial ratios for the real company
+        const realCurrentRatio = realData.totalAssets / realData.totalLiabilities;
+        const realNetProfitMargin = (realData.revenue - realData.costOfRevenue) / realData.revenue;
+        const realROA = realData.netIncome / realData.totalAssets;
+
+        // Calculate financial ratios for the user's company
+        const userCurrentRatio = company.assets / company.liabilities;
+        const userNetProfitMargin = (company.revenue - company.cost) / company.revenue;
+        const userROA = company.income / company.assets;
+
         res.json({
             userBalanceSheet: company,
             realBalanceSheet: {
@@ -185,11 +195,74 @@ router.get('/year-end-comparison/:companyId/:ticker', async (req, res) => {
                 depreciation: realData.depreciationAndAmortization,
                 amortization: realData.depreciationAndAmortization,
                 stockPrice: realData.stockPrice || 0,
+                cost: realData.costOfRevenue, // Add cost field
+                currentRatio: realCurrentRatio,
+                netProfitMargin: realNetProfitMargin,
+                ROA: realROA,
+            },
+            userFinancialRatios: {
+                currentRatio: userCurrentRatio,
+                netProfitMargin: userNetProfitMargin,
+                ROA: userROA,
             }
         });
     } catch (error) {
         console.error('Error fetching real company balance sheet:', error.message);
         res.status(500).json({ error: 'Failed to fetch financial data' });
+    }
+});
+
+router.post('/submit-calculations/:companyId', async (req, res) => {
+    try {
+        const { companyId } = req.params;
+        const { userCurrentRatio, userNetProfitMargin, userROA } = req.body;
+
+        const company = await Company.findById(companyId);
+        if (!company) return res.status(404).json({ msg: 'Company not found' });
+
+        const nextYear = company.currentYear + 1;
+        const url = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${company.name}?apikey=${FMP_API_KEY}`;
+
+        const response = await axios.get(url);
+        const realData = response.data.find(item => item.calendarYear === nextYear);
+
+        if (!realData) {
+            return res.status(404).json({ msg: 'Comparison balance sheet data not found' });
+        }
+
+        // Calculate financial ratios for the real company
+        const realCurrentRatio = realData.totalAssets / realData.totalLiabilities;
+        const realNetProfitMargin = (realData.revenue - realData.costOfRevenue) / realData.revenue;
+        const realROA = realData.netIncome / realData.totalAssets;
+
+        // Determine if the user is doing better
+        const achievements = [];
+        if (userCurrentRatio > realCurrentRatio) {
+            achievements.push(`Congrats your Current Ratio is higher than ${company.name}'s Current Ratio! Achievement unlocked: Get a better Current Ratio!`);
+        }
+        if (userNetProfitMargin > realNetProfitMargin) {
+            achievements.push(`Congrats your Net Profit Margin is higher than ${company.name}'s Net Profit Margin! Achievement unlocked: Get a better Net Profit Margin!`);
+        }
+        if (userROA > realROA) {
+            achievements.push(`Congrats your ROA is higher than ${company.name}'s ROA! Achievement unlocked: Get a better ROA!`);
+        }
+
+        res.json({
+            realFinancialRatios: {
+                currentRatio: realCurrentRatio,
+                netProfitMargin: realNetProfitMargin,
+                ROA: realROA,
+            },
+            userFinancialRatios: {
+                currentRatio: userCurrentRatio,
+                netProfitMargin: userNetProfitMargin,
+                ROA: userROA,
+            },
+            achievements,
+        });
+    } catch (error) {
+        console.error('Error submitting user calculations:', error.message);
+        res.status(500).json({ error: 'Failed to submit user calculations' });
     }
 });
 

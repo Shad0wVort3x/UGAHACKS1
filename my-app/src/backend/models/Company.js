@@ -16,6 +16,7 @@ const CompanySchema = new mongoose.Schema({
     currentYear: { type: Number, required: true },
     eventsCompleted: { type: Number, default: 0 },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, 
+    cost: { type: Number, required: true },
 });
 
 module.exports = mongoose.model('Company', CompanySchema);
