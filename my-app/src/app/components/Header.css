@@ -1,0 +1,38 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #220044; /* Dark Purple */
+    color: white;
+    padding: 15px 20px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .header-left {
+    flex: 1;
+    text-align: left;
+  }
+  
+  .header-center {
+    flex: 2;
+    text-align: center;
+  }
+  
+  .header-right {
+    flex: 1;
+    text-align: right;
+  }
+  
+  .header-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+  
+  .header-button:hover {
+    text-decoration: underline;
+  }
