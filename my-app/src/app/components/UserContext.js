@@ -1,32 +1,40 @@
-import { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 
-const UserContext = createContext();
+export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [userData, setUserData] = useState({
-    token: undefined,
-    user: undefined,
-  });
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const storedUserData = localStorage.getItem('userData');
-    if (storedUserData) {
-      try {
-        const parsedUserData = JSON.parse(storedUserData);
-        setUserData(parsedUserData);
-        setIsLoggedIn(true);
-      } catch (error) {
-        console.error("Error parsing stored user data:", error);
-      }
-    }
-  }, []);
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetch('/api/tokenIsValid', {
+                method: 'POST',
+                headers: {
+                    'Authorization': token,
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then((res) => res.json())
+                .then((isValid) => {
+                    if (isValid) {
+                        fetch('/api/user', {
+                            headers: {
+                                'Authorization': token,
+                            },
+                        })
+                            .then((res) => res.json())
+                            .then((data) => setUser(data));
+                    }
+                });
+        }
+    }, []);
 
-  return (
-    <UserContext.Provider value={{ userData, setUserData, isLoggedIn, setIsLoggedIn }}>
-      {children}
-    </UserContext.Provider>
-  );
+    return (
+        <UserContext.Provider value={{ user, setUser }}>
+            {children}
+        </UserContext.Provider>
+    );
 };
 
 export default UserContext;
