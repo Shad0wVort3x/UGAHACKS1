@@ -1,0 +1,22 @@
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 60px; /* Increase the height to make the footer bigger */
+    display: flex;
+    justify-content: space-around;
+    background-color: #220044; /* Dark purple color */
+    padding: 10px 0;
+  }
+  
+  .footer-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .footer-button:hover {
+    text-decoration: underline;
+  }
