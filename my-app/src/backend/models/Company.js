@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-const companySchema = new mongoose.Schema({
-    name: { type: String, required: true, unique: true },
+const CompanySchema = new mongoose.Schema({
+    name: { type: String, required: true },
     year: { type: Number, required: true },
     income: { type: Number, required: true },
     revenue: { type: Number, required: true },
@@ -12,10 +12,9 @@ const companySchema = new mongoose.Schema({
     operatingIncome: { type: Number, required: true },
     depreciation: { type: Number, required: true },
     amortization: { type: Number, required: true },
-    sustainabilityMetrics: { type: Number, default: 0 }, // ESG metric
-    stockPrice: { type: Number, default: 0 }, // Stock value that changes based on events
-    uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // If user uploads their own balance sheet
+    stockPrice: { type: Number, default: 0 },
+    currentYear: { type: Number, required: true },
+    eventsCompleted: { type: Number, default: 0 },
 });
 
-const Company = mongoose.model('Company', companySchema);
-module.exports = Company;
+module.exports = mongoose.model('Company', CompanySchema);
