@@ -9,7 +9,7 @@ export default function Header({ logoutHandler }) {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
 
-  console.log("isLoggedIn:", isLoggedIn); // Add this line to debug
+  console.log("isLoggedIn:", isLoggedIn); // Debugging line
 
   return (
     <>

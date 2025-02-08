@@ -7,7 +7,7 @@ import UserContext from './UserContext';
 import './Register.css';
 
 function Register(props) {
-  const { setUserData, setIsLoggedIn } = useContext(UserContext);
+  const { setUser, setIsLoggedIn } = useContext(UserContext); // ✅ Use setUser instead of setUserData
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -28,14 +28,14 @@ function Register(props) {
     try {
       const response = await axios.post('http://localhost:3001/api/register', formData);
       const userData = response.data;
-      setUserData({
-        token: response.data.token,
-        user: response.data.user,
-      });
-      localStorage.setItem('userData', JSON.stringify(userData));
+
+      // ✅ Correctly update UserContext
+      setUser(userData.user);
       setIsLoggedIn(true);
-      navigate('/');
-      props.setTrigger(false);
+      localStorage.setItem('userData', JSON.stringify(userData));
+
+      navigate('/'); // Redirect to homepage
+      props.setTrigger(false); // Close the registration modal
     } catch (err) {
       console.error('Registration failed: ', err);
       alert(err.response?.data?.msg || 'Registration failed. Please try again.');
@@ -58,7 +58,6 @@ function Register(props) {
           <label>
             <input
               type="email"
-              id="email"
               name="email"
               placeholder="EMAIL"
               className="placeholder"
@@ -71,7 +70,6 @@ function Register(props) {
           <label>
             <input
               type="password"
-              id="password"
               name="password"
               placeholder="PASSWORD"
               className="placeholder"
@@ -84,7 +82,6 @@ function Register(props) {
           <label>
             <input
               type="text"
-              id="name"
               name="name"
               placeholder="NAME"
               className="placeholder"

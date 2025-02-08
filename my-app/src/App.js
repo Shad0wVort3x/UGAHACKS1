@@ -1,32 +1,37 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import './App.css';
 import Header from './app/components/Header';
 import CompanyButtons from './app/components/CompanyButtons';
 import Footer from './app/components/Footer';
-import { UserProvider } from './app/components/UserContext';
+import { UserContext } from './app/components/UserContext';
 import Login from './app/components/Login';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Register from './app/components/Register';
+import { Route, Routes } from 'react-router-dom'; // ❌ Remove BrowserRouter
 
-function App() {
-  const isLoggedin = true; 
+function AppContent() {
+  const { isLoggedIn } = useContext(UserContext);
 
   return (
-    <UserProvider>
-      <div className="App">
-        <Header />
-        {isLoggedin && (
-          <div className="ticker-container">
-            {isLoggedin && <CompanyButtons />}
-          </div>
-        )}
-        <Routes>
-          <Route path="/register" element={<Register />} />
-        </Routes>
-        <Login />
-        <Footer />
-      </div>
-    </UserProvider>
+    <div className="App">
+      <Header />
+      {isLoggedIn && (
+        <div className="ticker-container">
+          <CompanyButtons />
+        </div>
+      )}
+      <Routes>
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={isLoggedIn ? <CompanyButtons /> : <Login />} />
+      </Routes>
+      <Footer />
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <AppContent /> // ❌ Remove extra Router here
   );
 }
 

@@ -4,34 +4,19 @@ export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            fetch('/api/tokenIsValid', {
-                method: 'POST',
-                headers: {
-                    'Authorization': token,
-                    'Content-Type': 'application/json',
-                },
-            })
-                .then((res) => res.json())
-                .then((isValid) => {
-                    if (isValid) {
-                        fetch('/api/user', {
-                            headers: {
-                                'Authorization': token,
-                            },
-                        })
-                            .then((res) => res.json())
-                            .then((data) => setUser(data));
-                    }
-                });
+        const storedUserData = localStorage.getItem('userData');
+        if (storedUserData) {
+            const parsedData = JSON.parse(storedUserData);
+            setUser(parsedData.user);
+            setIsLoggedIn(true);
         }
     }, []);
 
     return (
-        <UserContext.Provider value={{ user, setUser }}>
+        <UserContext.Provider value={{ user, setUser, isLoggedIn, setIsLoggedIn }}>
             {children}
         </UserContext.Provider>
     );
