@@ -18,7 +18,7 @@ app.use(cors({
 app.use(express.json());
 
 // Use environment variable for MongoDB URI
-const uri = process.env.MONGO_URI || "mongodb+srv://dbUser:<dbUserPass>@gameify.w1lmu.mongodb.net/?retryWrites=true&w=majority&appName=Gameify";
+const uri = process.env.MONGO_URI || "mongodb+srv://dbUser:123@gameify.w1lmu.mongodb.net/?retryWrites=true&w=majority&appName=Gameify";
 
 // Connect to MongoDB with Mongoose
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
