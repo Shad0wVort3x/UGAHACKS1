@@ -13,7 +13,7 @@ app.use(cors({
   
   app.use(express.json());
 
-const uri = "mongodb+srv://dbUser:<db_password>@gameify.w1lmu.mongodb.net/?retryWrites=true&w=majority&appName=Gameify"
+const uri = "mongodb+srv://dbUser:<dbUserPass>@gameify.w1lmu.mongodb.net/?retryWrites=true&w=majority&appName=Gameify"
 
   // Connect to MongoDB with Mongoose
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
