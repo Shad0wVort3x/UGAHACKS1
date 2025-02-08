@@ -5,12 +5,16 @@ import CompanyButtons from './app/components/CompanyButtons';
 import Footer from './app/components/Footer';
 
 function App() {
+  const isLoggedin = true; 
+
   return (
     <div className="App">
       <Header />
-      <div>
-        <CompanyButtons />
-      </div>
+      {isLoggedin && (
+        <div className="ticker-container">
+           {isLoggedin && <CompanyButtons />}
+        </div>
+      )}
       <Footer />
     </div>
   );
