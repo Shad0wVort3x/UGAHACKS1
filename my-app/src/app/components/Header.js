@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Header.css';
 import Login from './Login';
 import Register from './Register';
@@ -8,6 +9,7 @@ export default function Header({ logoutHandler }) {
   const { isLoggedIn } = useContext(UserContext);
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const navigate = useNavigate();
 
   console.log("isLoggedIn:", isLoggedIn); // Debugging line
 
@@ -19,6 +21,7 @@ export default function Header({ logoutHandler }) {
         </div>
         <div className="header-center">Truist - Gamify</div>
         <div className="header-right">
+          <button className="header-button" onClick={() => navigate('/tutorial')}>How To</button>
           {isLoggedIn ? (
             <button className="header-button" onClick={logoutHandler}>LOGOUT</button>
           ) : (

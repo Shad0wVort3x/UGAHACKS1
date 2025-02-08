@@ -6,7 +6,8 @@ import Footer from './app/components/Footer';
 import { UserContext } from './app/components/UserContext';
 import Login from './app/components/Login';
 import Register from './app/components/Register';
-import { Route, Routes } from 'react-router-dom'; // ❌ Remove BrowserRouter
+import Tutorial from './app/components/Tutorial';
+import { Route, Routes } from 'react-router-dom';
 
 function AppContent() {
   const { isLoggedIn } = useContext(UserContext);
@@ -22,6 +23,7 @@ function AppContent() {
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/tutorial" element={<Tutorial />} />
         <Route path="/" element={isLoggedIn ? <CompanyButtons /> : <Login />} />
       </Routes>
       <Footer />
@@ -31,7 +33,7 @@ function AppContent() {
 
 function App() {
   return (
-    <AppContent /> // ❌ Remove extra Router here
+    <AppContent />
   );
 }
 
