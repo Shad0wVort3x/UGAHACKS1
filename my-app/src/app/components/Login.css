@@ -1,0 +1,86 @@
+.login {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Darker background for better contrast */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it appears above other elements */
+}
+
+.login-inner {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 40px; /* Increased padding for better spacing */
+    width: 90%;
+    max-width: 500px; /* Adjusted max-width for better responsiveness */
+    background-color: #FFF;
+    border-radius: 15px; /* Softer border radius */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    text-align: center; /* Center align text */
+}
+
+.popup-close {
+    position: absolute;
+    top: 15px;
+    right: 15px; /* Moved to the right for better UX */
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #333; /* Darker color for better visibility */
+    font-size: 1.5rem;
+}
+
+.login-inner h3 {
+    margin-bottom: 20px; /* Space between heading and form */
+    font-size: 1.8rem; /* Larger font size for heading */
+    color: #333; /* Darker color for heading */
+}
+
+.login-inner form {
+    width: 100%;
+}
+
+.login-inner label {
+    display: block;
+    margin-bottom: 15px; /* Space between input fields */
+}
+
+.login-inner input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.login-horizontal-line {
+    width: 100%;
+    height: 1px;
+    background-color: #ccc;
+    margin: 20px 0; /* Space around the horizontal line */
+}
+
+.submit-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #220044; /* Matching the header color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #330066; /* Slightly darker shade on hover */
+}

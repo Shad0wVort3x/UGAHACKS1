@@ -12,7 +12,7 @@ function App() {
       <Header />
       {isLoggedin && (
         <div className="ticker-container">
-          <CompanyButtons />
+           {isLoggedin && <CompanyButtons />}
         </div>
       )}
       <Footer />
