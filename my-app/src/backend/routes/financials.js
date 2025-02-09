@@ -326,7 +326,6 @@ router.get('/year-end-comparison/:userId/:ticker', async (req, res) => {
           netProfitMargin: userNetProfitMargin,
           ROA: userROA,
         },
-        realFinancialRatios,
         previousCurrentRatio,
         currentRatioAchievement,
       });

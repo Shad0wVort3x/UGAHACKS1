@@ -61,9 +61,9 @@ const YearEndComparison = ({ userId, ticker }) => {
           <p><strong>Operating Income:</strong> {realBalanceSheet.operatingIncome}</p>
           <p><strong>Depreciation:</strong> {realBalanceSheet.depreciation}</p>
           <p><strong>Amortization:</strong> {realBalanceSheet.amortization}</p>
-          <p><strong>Current Ratio:</strong> {realFinancialRatios?.currentRatio || 'N/A'}</p>
-          <p><strong>Net Profit Margin:</strong> {realFinancialRatios?.netProfitMargin || 'N/A'}</p>
-          <p><strong>ROA:</strong> {realFinancialRatios?.ROA || 'N/A'}</p>
+          <p><strong>Current Ratio:</strong> {realBalanceSheet.currentRatio}</p>
+          <p><strong>Net Profit Margin:</strong> {realBalanceSheet.netProfitMargin}</p>
+          <p><strong>ROA:</strong> {realBalanceSheet.ROA}</p>
         </div>
       </div>
       {currentRatioAchievement && (
@@ -74,9 +74,9 @@ const YearEndComparison = ({ userId, ticker }) => {
       )}
       <div className="stats-box">
         <h3>User Financial Ratios</h3>
-        <p><strong>Current Ratio:</strong> {userFinancialRatios?.currentRatio || 'N/A'}</p>
-        <p><strong>Net Profit Margin:</strong> {userFinancialRatios?.netProfitMargin || 'N/A'}</p>
-        <p><strong>ROA:</strong> {userFinancialRatios?.ROA || 'N/A'}</p>
+        <p><strong>Current Ratio:</strong> {userFinancialRatios.currentRatio}</p>
+        <p><strong>Net Profit Margin:</strong> {userFinancialRatios.netProfitMargin}</p>
+        <p><strong>ROA:</strong> {userFinancialRatios.ROA}</p>
       </div>
     </div>
   );
