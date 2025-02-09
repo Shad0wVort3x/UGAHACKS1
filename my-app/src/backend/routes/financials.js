@@ -182,13 +182,12 @@ router.get('/year-end-comparison/:companyId/:ticker', async (req, res) => {
 
         // Compare user's current ratio with the previous year's ratio
         const previousYear = company.currentYear;
-        const previousYearData = await Company.findOne({ name: company.name, year: previousYear });
+        const previousYearData = response.data.find(item => item.calendarYear === previousYear);
+        const previousUserCurrentRatio = previousYearData ? previousYearData.totalAssets / previousYearData.totalLiabilities : null;
+
         let achievement = null;
-        if (previousYearData) {
-            const previousCurrentRatio = previousYearData.assets / previousYearData.liabilities;
-            if (userCurrentRatio > previousCurrentRatio) {
-                achievement = `Congrats your Current Ratio is higher than last year! Achievement unlocked: Improved Current Ratio!`;
-            }
+        if (previousUserCurrentRatio && userCurrentRatio > previousUserCurrentRatio) {
+            achievement = `Congrats your Current Ratio is higher than last year! Achievement unlocked: Improved Current Ratio!`;
         }
 
         res.json({
