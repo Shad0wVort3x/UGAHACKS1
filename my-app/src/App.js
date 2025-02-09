@@ -10,7 +10,6 @@ import Tutorial from './app/components/Tutorial';
 import { Route, Routes } from 'react-router-dom';
 import GameWindow from './app/components/GameWindow';
 import HomeWindow from './app/components/HomeWindow';
-import Profile from './app/components/Profile';
 
 function AppContent() {
   const { isLoggedIn } = useContext(UserContext);
@@ -25,8 +24,8 @@ function AppContent() {
         <Route path="/game" element={<GameWindow />} />
         <Route path="/" element={isLoggedIn ? <CompanyButtons /> : <Login />} />
         <Route path="/" element={<HomeWindow />} />
-        <Route path="/profile" element={<Profile />} />
-      </Routes>
+        <Route path="/game" element={<GameWindow />} />
+        </Routes>
       <Footer />
     </div>
   );

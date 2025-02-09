@@ -1,6 +1,8 @@
 import React from 'react';
 import GameFooter from './GameFooter';
 import './GameWindow.css';
+import CompanyStats from './CompanyStats';
+import GameScenario from './GameScenario'; // Corrected import
 
 class GameWindow extends React.Component {
   constructor(props) {
@@ -33,27 +35,14 @@ class GameWindow extends React.Component {
     } = this.state;
 
     return (
-      <div className="game-window">
-        <h1>Trust-Gamify</h1>
-
-        <div className="company-stats">
-          <h2>Company Stats</h2>
-          <p><strong>Total Assets:</strong> {totalAssets !== null ? `$${totalAssets.toLocaleString()}` : 'Input required'}</p>
-          <p><strong>Total Liabilities:</strong> {totalLiabilities !== null ? `$${totalLiabilities.toLocaleString()}` : 'Input required'}</p>
-          <p><strong>Total Equity:</strong> {totalEquity !== null ? `$${totalEquity.toLocaleString()}` : 'Input required'}</p>
-          <p><strong>Revenue:</strong> {revenue !== null ? `$${revenue.toLocaleString()}` : 'Input required'}</p>
-          <p><strong>Cost:</strong> {cost !== null ? `$${cost.toLocaleString()}` : 'Input required'}</p>
-          <p><strong>Net Income:</strong> {netIncome !== null ? `$${netIncome.toLocaleString()}` : 'Input required'}</p>
-          <p><strong>Current Ratio:</strong> {currentRatio !== null ? currentRatio : 'Input required'}</p>
-          <p><strong>Net Profit Margin:</strong> {netProfitMargin !== null ? `${netProfitMargin}%` : 'Input required'}</p>
-          <p><strong>ROA:</strong> {roa !== null ? `${roa}%` : 'Input required'}</p>
-        </div>
+      <div>
+        <GameScenario /> {/* Corrected component usage */}
+        <CompanyStats />
 
         <div className="game-scenario">
-          <h2>Game Scenario</h2>
           <p>{/* Add game scenario description here */}</p>
         </div>
-
+        
         <GameFooter />
       </div>
     );

@@ -14,6 +14,7 @@ const CompanyButtons = () => {
     const file = e.target.files[0];
     if (file && file.type === "application/pdf") {
       console.log("pdf file is selected: ", file);
+      navigate("/game"); 
     } else {
       console.log("Please select a pdf file");
     }

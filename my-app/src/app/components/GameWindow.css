@@ -1,0 +1,23 @@
+.game-window{
+    position: absolute; /* Position the box absolutely within the game window */
+     /* Distance from the top */
+    right: 20px; /* Distance from the right */
+    width: 300px; /* Adjust the width as needed */
+    padding: 20px;
+    background-color: transparent; /* White background */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow for a floating effect */
+}
+  
+  /* Styles for the content inside the white box */
+.game-window h1{
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+  
+.game-window p {
+    font-size: 16px;
+    color: #555;
+    margin: 10px 0;
+}

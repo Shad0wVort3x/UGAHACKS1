@@ -3,15 +3,17 @@ import './CompanyStats.css';
 
 const CompanyStats = () => {
     return (
-        <div style={styles.container}>
+
+      
+        <div className='company-stats'>
         <h1>Company Stats</h1>
         <div style={styles.stats}>
-          <p><strong>Total Assets:</strong> ${totalAssets.toLocaleString()}</p>
-          <p><strong>Total Liabilities:</strong> ${totalLiabilities.toLocaleString()}</p>
-          <p><strong>Total Equity:</strong> ${totalEquity.toLocaleString()}</p>
-          <p><strong>Revenue:</strong> ${revenue.toLocaleString()}</p>
-          <p><strong>Cost:</strong> ${cost.toLocaleString()}</p>
-          <p><strong>Net Income:</strong> ${netIncome.toLocaleString()}</p>
+          <p><strong>Total Assets:</strong> </p>
+          <p><strong>Total Liabilities:</strong> </p>
+          <p><strong>Total Equity:</strong> </p>
+          <p><strong>Revenue:</strong> </p>
+          <p><strong>Cost:</strong> </p>
+          <p><strong>Net Income:</strong> </p>
         </div>
       </div>
 
