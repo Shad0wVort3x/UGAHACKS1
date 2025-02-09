@@ -7,6 +7,7 @@ import './CompanyButtons.css';
 
 const CompanyButtons = () => {
   const { user } = useContext(UserContext);
+  const [userId, setUserId] = useState(null);
   const [ticker, setTicker] = useState('');
   const [companyData, setCompanyData] = useState(null);
   const [event, setEvent] = useState(null);
@@ -14,15 +15,24 @@ const CompanyButtons = () => {
   const fileInput = useRef(null);
   const navigate = useNavigate();
 
+  React.useEffect(() => {
+      const userdata = JSON.parse(localStorage.getItem('userData'));
+      console.log("User Data:", userdata);
+      if (userdata && userdata.user) {
+        setUserId(userdata.user.id);
+      }
+  
+    }, []); // Ensure it fetches only when userId is available
+
   const handleTickerChange = (e) => {
     setTicker(e.target.value);
   };
 
   const handleSelectCompany = async () => {
     try {
-        console.log(`Fetching company data for ${ticker} for user ${user.id}`);
+        console.log(`Fetching company data for ${ticker} for user ${userId}`);
 
-        const response = await axios.get(`http://localhost:3001/api/financials/initialize-company/${ticker}/${user.id}`);
+        const response = await axios.get(`http://localhost:3001/api/financials/initialize-company/${ticker}/${userId}`);
 
         console.log("API Response:", response.data);
         if (!response.data.success) {

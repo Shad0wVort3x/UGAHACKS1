@@ -10,11 +10,20 @@ import './GameWindow.css';
 
 const GameWindow = () => {
   const { user } = useContext(UserContext); // Get userId from context
-  const userId = user?.id;
+  const [userId, setUserId] = useState("");
   const [event, setEvent] = useState(null);
   const [eventsCompleted, setEventsCompleted] = useState(0);
   const [companyData, setCompanyData] = useState(null);
   const [gameOver, setGameOver] = useState(false);
+
+  useEffect(() => {
+    const userdata = JSON.parse(localStorage.getItem('userData'));
+    console.log("🔹 User Data:", userdata);
+    if (userdata && userdata.user) {
+      setUserId(userdata.user.id);
+    }
+
+  }, []); // Ensure it fetches only when userId is available
 
   useEffect(() => {
     if (userId) {
