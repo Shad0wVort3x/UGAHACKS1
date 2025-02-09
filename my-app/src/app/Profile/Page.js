@@ -1,7 +1,7 @@
 import React from 'react';
 import Profile from '../components/Profile';
 
-const Dashboard = () => {
+const profilePage = () => {
   return (
     <div>
       <Profile />
@@ -9,4 +9,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default profilePage;
