@@ -1,7 +1,24 @@
-.game-scenario {
-    border: 2px solid #000; /* Black border */
-    padding: 20px; /* Space inside the border */
-    margin: 20px; /* Space outside the border */
-    border-radius: 10px; /* Rounded corners */
-    background-color: #f9f9f9; /* Light grey background */
-}
+  
+  .static-box {
+    position: absolute;
+    top: 100px; /* Align with the CompanyStats box */
+    left: 20px; /* Adjust the left position as needed */
+    width: 1200px; /* Match the width of the game-scenario-container */
+    height: 333px; /* Adjust the height as needed */
+    background-color: rgba(0, 0, 0, 0.1); /* Semi-transparent background */
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Thin white border */
+    border-radius: 8px;
+    z-index: -1; /* Ensure the static box is behind the game scenario text */
+  }
+  
+  .game-scenario-container {
+    position: absolute;
+    top: 60px;
+    left: 10px;
+    padding: 20px;
+    width: 100%;
+    height: 100%;
+    text-align: left;
+    font-family: 'Arial, sans-serif';
+    color: #333;
+  }

@@ -1,5 +1,6 @@
-import TypeIt from "typeit";
 import React, { useEffect, useRef } from 'react';
+import TypeIt from "typeit";
+import './GameScenario.css';
 
 const GameScenario = () => {
     const typeItInstance = useRef(null);
@@ -19,7 +20,10 @@ const GameScenario = () => {
 
     return (
         <div>
-            <h1 id="typeit"></h1>
+            <div className="static-box"></div>
+            <div className="game-scenario-container">
+                <h1 id="typeit"></h1>
+            </div>
         </div>
     );
 };
