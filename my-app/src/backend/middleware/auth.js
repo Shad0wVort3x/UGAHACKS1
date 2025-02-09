@@ -1,27 +1,28 @@
-require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
-JWT_SECRET = process.env.JWT_SECRET || 'secret123';
+// Hardcoded JWT secret
+const JWT_SECRET = 'f6be9459e3800df224d0dad13754b85c4f541efef4f5c2f0504bee6da0362d59880766899df3c2538c87d7b48ee69b06d65646080bf03f8e2efca0653c939a1f';
 
 const auth = async (req, res, next) => {
-    try {
-      const token = req.header('Authorization');
-      if (!token) return res.status(401).json({ msg: 'No authentication token, authorization denied.' });
-  
-      const tokenParts = token.startsWith('Bearer ') ? token.split(' ')[1] : token;
-      const verified = jwt.verify(tokenParts, JWT_SECRET);
-      if (!verified) return res.status(401).json({ msg: 'Token verification failed, authorization denied.' });
-  
-      req.user = verified.id;
-  
-      console.log("Decoded user ID from token:", req.user); // Log decoded user ID
-  
-      next();
-    } catch (err) {
-      console.error("Error in auth middleware:", err.message); // Log any errors
-      res.status(500).json({ error: err.message });
+  const token = req.header('Authorization').replace('Bearer ', '');
+  console.log("🔹 Received Token:", token); // Debugging
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    console.log("✅ Decoded Token:", decoded); // Debugging
+    const user = await User.findOne({ _id: decoded._id });
+
+    if (!user) {
+      throw new Error();
     }
-  };
-  
+
+    req.token = token;
+    req.user = user._id;
+    next();
+  } catch (error) {
+    console.error("❌ Token verification failed:", error); // Debugging
+    res.status(401).send({ message: 'Unauthorized: Invalid Token' });
+  }
+};
 
 module.exports = auth;

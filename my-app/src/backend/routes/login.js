@@ -1,11 +1,10 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
 const User = require('../models/User');
 const userRouter = express.Router(); // Ensure userRouter is defined here
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret123';
+const JWT_SECRET = 'f6be9459e3800df224d0dad13754b85c4f541efef4f5c2f0504bee6da0362d59880766899df3c2538c87d7b48ee69b06d65646080bf03f8e2efca0653c939a1f';
 
 // Login a user
 userRouter.post('/', async (req, res) => { 
@@ -30,7 +29,7 @@ userRouter.post('/', async (req, res) => {
         }
 
         // Generate a JWT token
-        const token = jwt.sign({ id: user._id }, JWT_SECRET);
+        const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '1h' });
 
         // Respond with the token and user details
         res.json({
@@ -41,7 +40,8 @@ userRouter.post('/', async (req, res) => {
             },
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Error logging in:', err);
+        res.status(500).json({ message: 'Server error' });
     }
 });
 

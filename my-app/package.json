@@ -6,6 +6,7 @@
     "axios": "^0.21.1",
     "bcrypt": "^5.1.1",
     "cra-template": "1.2.0",
+    "dotenv": "^16.4.7",
     "framer-motion": "^12.4.1",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",

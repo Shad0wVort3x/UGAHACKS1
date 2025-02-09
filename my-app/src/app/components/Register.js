@@ -16,6 +16,8 @@ function Register(props) {
     name: '',
   });
 
+  const [error, setError] = useState(null);
+
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
@@ -26,19 +28,17 @@ function Register(props) {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3001/api/register', formData);
-      const userData = response.data;
+      await axios.post('http://localhost:3001/api/register', formData);
 
-      // ✅ Correctly update UserContext
-      setUser(userData.user);
-      setIsLoggedIn(true);
-      localStorage.setItem('userData', JSON.stringify(userData));
+      // Show alert after successful registration
+      alert('Registration successful! Please log in to access your account.');
 
-      navigate('/'); // Redirect to homepage
+      // Redirect to login page after successful registration
+      navigate('/login');
       props.setTrigger(false); // Close the registration modal
     } catch (err) {
       console.error('Registration failed: ', err);
-      alert(err.response?.data?.msg || 'Registration failed. Please try again.');
+      setError(err.response?.data?.msg || 'Registration failed. Please try again.');
     }
   };
 
@@ -99,6 +99,7 @@ function Register(props) {
           >
             Register
           </button>
+          {error && <p className="error">{error}</p>}
         </form>
         {props.children}
       </div>
@@ -107,4 +108,3 @@ function Register(props) {
 }
 
 export default Register;
-  
