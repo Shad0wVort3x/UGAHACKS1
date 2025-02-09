@@ -180,6 +180,19 @@ router.get('/year-end-comparison/:companyId/:ticker', async (req, res) => {
         const userNetProfitMargin = (company.revenue - company.cost) / company.revenue;
         const userROA = company.income / company.assets;
 
+        // Compare user's current ratio with the previous year's ratio
+        const previousYear = company.currentYear;
+        const previousYearData = await Company.findOne({ name: company.name, year: previousYear });
+        let previousCurrentRatio = null;
+        let currentRatioAchievement = null;
+
+        if (previousYearData) {
+            previousCurrentRatio = previousYearData.assets / previousYearData.liabilities;
+            if (userCurrentRatio > previousCurrentRatio) {
+                currentRatioAchievement = `Congrats your Current Ratio is higher than last year! Achievement unlocked: Improved Current Ratio!`;
+            }
+        }
+
         res.json({
             userBalanceSheet: company,
             realBalanceSheet: {
@@ -204,7 +217,9 @@ router.get('/year-end-comparison/:companyId/:ticker', async (req, res) => {
                 currentRatio: userCurrentRatio,
                 netProfitMargin: userNetProfitMargin,
                 ROA: userROA,
-            }
+            },
+            previousCurrentRatio,
+            currentRatioAchievement,
         });
     } catch (error) {
         console.error('Error fetching real company balance sheet:', error.message);
