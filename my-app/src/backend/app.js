@@ -21,7 +21,7 @@ app.use(express.json());
 const uri = process.env.MONGO_URI || "mongodb+srv://dbUser:123@gameify.w1lmu.mongodb.net/?retryWrites=true&w=majority&appName=Gameify";
 
 // Connect to MongoDB with Mongoose
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(uri)
     .then(() => console.log('Connected to MongoDB via Mongoose'))
     .catch((error) => console.error('Error connecting to MongoDB:', error));
 

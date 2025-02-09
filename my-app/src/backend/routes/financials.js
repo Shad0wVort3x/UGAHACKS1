@@ -6,47 +6,104 @@ const parseBalanceSheet = require('../util/parseBalanceSheet');
 require('dotenv').config();
 
 const router = express.Router();
-const FMP_API_KEY = process.env.FMP_API_KEY;
+const FMP_API_KEY = '1Wz7J5uxlHiV8OM3lZ4FHpwvBr6ohY2L'; // Hardcoded API key
 const upload = multer({ dest: 'uploads/' });
 
 // Fetch and store only Year 0 balance sheet
-router.get('/initialize-company/:ticker/:year/:userId', async (req, res) => {
+router.get('/initialize-company/:ticker/:userId', async (req, res) => {
     try {
-        const { ticker, year, userId } = req.params;
-        const url = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?apikey=${FMP_API_KEY}`;
-        
-        const response = await axios.get(url);
-        const data = response.data.find(item => item.calendarYear === parseInt(year));
+        const { ticker, userId } = req.params;
+        const year = 2015; // Default start year
+        console.log(`Fetching balance sheet for ${ticker} in year ${year} for user ${userId}`);
 
-        if (!data) {
-            return res.status(404).json({ msg: 'Balance sheet data not found' });
-        }
+        const balanceSheetUrl = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?apikey=${FMP_API_KEY}`;
+        const incomeStatementUrl = `https://financialmodelingprep.com/api/v3/income-statement/${ticker}?apikey=${FMP_API_KEY}`;
+        const cashFlowUrl = `https://financialmodelingprep.com/api/v3/cash-flow-statement/${ticker}?apikey=${FMP_API_KEY}`;
+        const stockPriceUrl = `https://financialmodelingprep.com/api/v3/quote/${ticker}?apikey=${FMP_API_KEY}`;
 
-        // Store initial balance sheet for player
-        const companyData = new Company({
-            name: ticker.toUpperCase(),
-            year: parseInt(year),
-            income: data.netIncome,
-            revenue: data.revenue,
-            profit: data.grossProfit,
-            assets: data.totalAssets,
-            liabilities: data.totalLiabilities,
-            shareholdersEquity: data.totalStockholdersEquity,
-            operatingIncome: data.operatingIncome,
-            depreciation: data.depreciationAndAmortization,
-            amortization: data.depreciationAndAmortization,
-            stockPrice: data.stockPrice || 0,
-            currentYear: parseInt(year),
-            eventsCompleted: 0,
-            userId: userId, // Store userId
+        console.log("🔹 API Request URLs:", { balanceSheetUrl, incomeStatementUrl, cashFlowUrl, stockPriceUrl });
+
+        const [balanceSheetResponse, incomeStatementResponse, cashFlowResponse, stockPriceResponse] = await Promise.all([
+            axios.get(balanceSheetUrl),
+            axios.get(incomeStatementUrl),
+            axios.get(cashFlowUrl),
+            axios.get(stockPriceUrl)
+        ]);
+
+        console.log("🔹 FMP API Raw Responses:", {
+            balanceSheet: balanceSheetResponse.data,
+            incomeStatement: incomeStatementResponse.data,
+            cashFlow: cashFlowResponse.data,
+            stockPrice: stockPriceResponse.data
         });
 
-        await companyData.save();
+        if (!balanceSheetResponse.data || balanceSheetResponse.data.length === 0) {
+            console.log("❌ No balance sheet data found for the ticker.");
+            return res.status(404).json({ success: false, msg: "Balance sheet data not found" });
+        }
 
-        res.json(companyData);
+        // Find the closest available year data
+        let balanceSheetData = balanceSheetResponse.data.find(item => item.calendarYear === year);
+        if (!balanceSheetData) {
+            console.log(`❌ No balance sheet found for ${year}. Trying to find the closest available year.`);
+            balanceSheetData = balanceSheetResponse.data.sort((a, b) => Math.abs(year - a.calendarYear) - Math.abs(year - b.calendarYear))[0];
+            if (!balanceSheetData) {
+                console.log("❌ No suitable balance sheet data found.");
+                return res.status(404).json({ success: false, msg: "No suitable balance sheet data found" });
+            }
+        }
+
+        // Find the closest available year data for income statement
+        let incomeStatementData = incomeStatementResponse.data.find(item => item.calendarYear === year);
+        if (!incomeStatementData) {
+            console.log(`❌ No income statement found for ${year}. Trying to find the closest available year.`);
+            incomeStatementData = incomeStatementResponse.data.sort((a, b) => Math.abs(year - a.calendarYear) - Math.abs(year - b.calendarYear))[0];
+        }
+
+        // Find the closest available year data for cash flow statement
+        let cashFlowData = cashFlowResponse.data.find(item => item.calendarYear === year);
+        if (!cashFlowData) {
+            console.log(`❌ No cash flow statement found for ${year}. Trying to find the closest available year.`);
+            cashFlowData = cashFlowResponse.data.sort((a, b) => Math.abs(year - a.calendarYear) - Math.abs(year - b.calendarYear))[0];
+        }
+
+        // Get the stock price data
+        const stockPriceData = stockPriceResponse.data[0];
+
+        console.log("✅ Extracted Data:", { balanceSheetData, incomeStatementData, cashFlowData, stockPriceData });
+
+        // Create company data object with default values for missing fields
+        const companyData = {
+            name: ticker.toUpperCase(),
+            year: balanceSheetData.calendarYear,
+            income: incomeStatementData ? incomeStatementData.netIncome : 0,
+            revenue: incomeStatementData ? incomeStatementData.revenue : 0,
+            profit: incomeStatementData ? incomeStatementData.grossProfit : 0,
+            assets: balanceSheetData.totalAssets || 0,
+            liabilities: balanceSheetData.totalLiabilities || 0,
+            shareholdersEquity: balanceSheetData.totalStockholdersEquity || 0,
+            operatingIncome: incomeStatementData ? incomeStatementData.operatingIncome : 0,
+            depreciation: cashFlowData ? cashFlowData.depreciationAndAmortization : 0,
+            amortization: cashFlowData ? cashFlowData.depreciationAndAmortization : 0,
+            stockPrice: stockPriceData ? stockPriceData.price : 0,
+            currentYear: balanceSheetData.calendarYear,
+            eventsCompleted: 0,
+            userId: userId,
+            cost: incomeStatementData ? incomeStatementData.costOfRevenue : 0,
+        };
+
+        // Save company data
+        const savedCompany = new Company(companyData);
+        await savedCompany.save();
+
+        console.log("✅ Company Data Saved to Database:", savedCompany);
+
+        res.json({ success: true, companyData: savedCompany });
+
     } catch (error) {
-        console.error('Error fetching initial balance sheet:', error.message);
-        res.status(500).json({ error: 'Failed to fetch financial data' });
+        console.error("❌ Error fetching initial balance sheet:", error.message);
+        console.error("❌ Full Error:", error);
+        res.status(500).json({ success: false, error: 'Failed to fetch financial data', details: error.message });
     }
 });
 
