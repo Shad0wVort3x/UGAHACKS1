@@ -108,35 +108,61 @@ router.get('/initialize-company/:ticker/:userId', async (req, res) => {
 });
 
 // Fetch real balance sheet for comparison at the end of each year
-router.get('/compare/:ticker/:year', async (req, res) => {
+router.get('/initialize-company/:ticker/:userId', async (req, res) => {
     try {
-        const { ticker, year } = req.params;
-        const url = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?apikey=${FMP_API_KEY}`;
-        
-        const response = await axios.get(url);
-        const realData = response.data.find(item => item.calendarYear === parseInt(year));
+        const { ticker, userId } = req.params;
+        const year = 2020; // Start from 2020
+        console.log(`Fetching balance sheet for ${ticker} in year ${year} for user ${userId}`);
 
-        if (!realData) {
-            return res.status(404).json({ msg: 'Comparison balance sheet data not found' });
+        const balanceSheetUrl = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?apikey=${FMP_API_KEY}`;
+        const incomeStatementUrl = `https://financialmodelingprep.com/api/v3/income-statement/${ticker}?apikey=${FMP_API_KEY}`;
+        const cashFlowUrl = `https://financialmodelingprep.com/api/v3/cash-flow-statement/${ticker}?apikey=${FMP_API_KEY}`;
+        const stockPriceUrl = `https://financialmodelingprep.com/api/v3/quote/${ticker}?apikey=${FMP_API_KEY}`;
+
+        const [balanceSheetResponse, incomeStatementResponse, cashFlowResponse, stockPriceResponse] = await Promise.all([
+            axios.get(balanceSheetUrl),
+            axios.get(incomeStatementUrl),
+            axios.get(cashFlowUrl),
+            axios.get(stockPriceUrl)
+        ]);
+
+        if (!balanceSheetResponse.data || balanceSheetResponse.data.length === 0) {
+            return res.status(404).json({ success: false, msg: "Balance sheet data not found" });
         }
 
-        res.json({
+        const balanceSheetData = balanceSheetResponse.data.find(item => item.calendarYear === year);
+        const incomeStatementData = incomeStatementResponse.data.find(item => item.calendarYear === year);
+        const cashFlowData = cashFlowResponse.data.find(item => item.calendarYear === year);
+        const stockPriceData = stockPriceResponse.data[0];
+
+        // ✅ Store all financial details under the user’s profile
+        const companyData = {
+            userId, // Track individual player
             name: ticker.toUpperCase(),
             year: parseInt(year),
-            income: realData.netIncome,
-            revenue: realData.revenue,
-            profit: realData.grossProfit,
-            assets: realData.totalAssets,
-            liabilities: realData.totalLiabilities,
-            shareholdersEquity: realData.totalStockholdersEquity,
-            operatingIncome: realData.operatingIncome,
-            depreciation: realData.depreciationAndAmortization,
-            amortization: realData.depreciationAndAmortization,
-            stockPrice: realData.stockPrice || 0,
-        });
+            income: incomeStatementData ? incomeStatementData.netIncome : 0,
+            revenue: incomeStatementData ? incomeStatementData.revenue : 0,
+            profit: incomeStatementData ? incomeStatementData.grossProfit : 0,
+            assets: balanceSheetData ? balanceSheetData.totalAssets : 0,
+            liabilities: balanceSheetData ? balanceSheetData.totalLiabilities : 0,
+            shareholdersEquity: balanceSheetData ? balanceSheetData.totalStockholdersEquity : 0,
+            operatingIncome: incomeStatementData ? incomeStatementData.operatingIncome : 0,
+            depreciation: cashFlowData ? cashFlowData.depreciationAndAmortization : 0,
+            amortization: cashFlowData ? cashFlowData.depreciationAndAmortization : 0,
+            stockPrice: stockPriceData ? stockPriceData.price : 0,
+            currentYear: parseInt(year),
+            eventsCompleted: 0
+        };
+
+        // Save player's unique company stats
+        const savedCompany = new Company(companyData);
+        await savedCompany.save();
+
+        res.json({ success: true, companyData: savedCompany });
+
     } catch (error) {
-        console.error('Error fetching real company balance sheet:', error.message);
-        res.status(500).json({ error: 'Failed to fetch financial data' });
+        console.error("❌ Error fetching initial balance sheet:", error.message);
+        res.status(500).json({ success: false, error: 'Failed to fetch financial data', details: error.message });
     }
 });
 
@@ -179,13 +205,13 @@ const events = [
     // Define your events here
 ];
 
-router.put('/apply-event/:companyId', async (req, res) => {
+router.put('/apply-event/:userId', async (req, res) => {
     try {
-        const { companyId } = req.params;
+        const { userId } = req.params;
         const event = events[Math.floor(Math.random() * events.length)];
 
-        const company = await Company.findById(companyId);
-        if (!company) return res.status(404).json({ msg: 'Company not found' });
+        const company = await Company.findOne({ userId: userId });
+        if (!company) return res.status(404).json({ msg: 'Player company not found' });
 
         // Modify values based on event impact
         company.revenue *= event.impact.revenue || 1;
@@ -210,86 +236,120 @@ router.put('/apply-event/:companyId', async (req, res) => {
 });
 
 // Year-end comparison
-router.get('/year-end-comparison/:companyId/:ticker', async (req, res) => {
+// Year-end comparison
+// In backend/routes/financials.js
+router.get('/year-end-comparison/:userId/:ticker', async (req, res) => {
     try {
-        const { companyId, ticker } = req.params;
-
-        const company = await Company.findById(companyId);
-        if (!company) return res.status(404).json({ msg: 'Company not found' });
-
-        const nextYear = company.currentYear + 1;
-        const url = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?apikey=${FMP_API_KEY}`;
-
-        const response = await axios.get(url);
-        const realData = response.data.find(item => item.calendarYear === nextYear);
-
-        if (!realData) {
-            return res.status(404).json({ msg: 'Comparison balance sheet data not found' });
+      const { userId, ticker } = req.params;
+  
+      // Retrieve the player's company record by userId
+      const company = await Company.findOne({ userId: userId });
+      if (!company) return res.status(404).json({ msg: 'Player company not found' });
+  
+      // Next year we want to compare against
+      const nextYear = company.currentYear + 1;
+  
+      // Build the API URLs for balance sheet, income statement, and cash flow
+      const bsUrl = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?apikey=${FMP_API_KEY}`;
+      const isUrl = `https://financialmodelingprep.com/api/v3/income-statement/${ticker}?apikey=${FMP_API_KEY}`;
+      const cfUrl = `https://financialmodelingprep.com/api/v3/cash-flow-statement/${ticker}?apikey=${FMP_API_KEY}`;
+  
+      // Fetch all data in parallel
+      const [bsResponse, isResponse, cfResponse] = await Promise.all([
+        axios.get(bsUrl),
+        axios.get(isUrl),
+        axios.get(cfUrl)
+      ]);
+  
+      // For each, try to find a record for nextYear; if not found, fall back to the most recent record
+      let bsData = bsResponse.data.find(item => item.calendarYear === nextYear);
+      if (!bsData) {
+        console.log(`No balance sheet data for year ${nextYear}. Using fallback data.`);
+        bsData = bsResponse.data.sort((a, b) => b.calendarYear - a.calendarYear)[0];
+      }
+  
+      let isData = isResponse.data.find(item => item.calendarYear === nextYear);
+      if (!isData) {
+        console.log(`No income statement data for year ${nextYear}. Using fallback data.`);
+        isData = isResponse.data.sort((a, b) => b.calendarYear - a.calendarYear)[0];
+      }
+  
+      let cfData = cfResponse.data.find(item => item.calendarYear === nextYear);
+      if (!cfData) {
+        console.log(`No cash flow data for year ${nextYear}. Using fallback data.`);
+        cfData = cfResponse.data.sort((a, b) => b.calendarYear - a.calendarYear)[0];
+      }
+  
+      // Merge the data from the three responses into one realData object.
+      // Note: Some fields may come only from one source.
+      const realData = {
+        name: ticker.toUpperCase(),
+        year: bsData ? bsData.calendarYear : nextYear,
+        income: isData ? isData.netIncome : 0,                      // from income statement
+        revenue: isData ? isData.revenue : 0,                        // from income statement
+        profit: isData ? isData.grossProfit : 0,                     // from income statement
+        assets: bsData ? bsData.totalAssets : 0,                     // from balance sheet
+        liabilities: bsData ? bsData.totalLiabilities : 0,           // from balance sheet
+        shareholdersEquity: bsData ? bsData.totalStockholdersEquity : 0, // from balance sheet
+        operatingIncome: isData ? isData.operatingIncome : 0,        // from income statement
+        depreciation: cfData ? cfData.depreciationAndAmortization : 0, // from cash flow
+        amortization: cfData ? cfData.depreciationAndAmortization : 0, // from cash flow (if same)
+        stockPrice: bsData && bsData.stockPrice ? bsData.stockPrice : 0, // if available; otherwise 0
+        cost: isData ? isData.costOfRevenue : 0,                     // from income statement
+      };
+  
+      // Calculate financial ratios for the real company using bsData and isData
+      const realCurrentRatio = bsData ? bsData.totalAssets / bsData.totalLiabilities : 0;
+      const realNetProfitMargin = isData ? (isData.revenue - isData.costOfRevenue) / isData.revenue : 0;
+      const realROA = bsData ? (isData ? isData.netIncome / bsData.totalAssets : 0) : 0;
+  
+      // Calculate financial ratios for the player's company (stored in company)
+      const userCurrentRatio = company.assets / company.liabilities;
+      const userNetProfitMargin = (company.revenue - company.cost) / company.revenue;
+      const userROA = company.income / company.assets;
+  
+      // (Optional) Compare with previous year data to award an achievement
+      let previousCurrentRatio = null;
+      let currentRatioAchievement = null;
+      const previousYearData = await Company.findOne({ name: company.name, year: company.currentYear });
+      if (previousYearData) {
+        previousCurrentRatio = previousYearData.assets / previousYearData.liabilities;
+        if (userCurrentRatio > previousCurrentRatio) {
+          currentRatioAchievement = `Congrats! Your Current Ratio is higher than last year.`;
         }
-
-        // Calculate financial ratios for the real company
-        const realCurrentRatio = realData.totalAssets / realData.totalLiabilities;
-        const realNetProfitMargin = (realData.revenue - realData.costOfRevenue) / realData.revenue;
-        const realROA = realData.netIncome / realData.totalAssets;
-
-        // Calculate financial ratios for the user's company
-        const userCurrentRatio = company.assets / company.liabilities;
-        const userNetProfitMargin = (company.revenue - company.cost) / company.revenue;
-        const userROA = company.income / company.assets;
-
-        // Compare user's current ratio with the previous year's ratio
-        const previousYear = company.currentYear;
-        const previousYearData = await Company.findOne({ name: company.name, year: previousYear });
-        let previousCurrentRatio = null;
-        let currentRatioAchievement = null;
-
-        if (previousYearData) {
-            previousCurrentRatio = previousYearData.assets / previousYearData.liabilities;
-            if (userCurrentRatio > previousCurrentRatio) {
-                currentRatioAchievement = `Congrats your Current Ratio is higher than last year! Achievement unlocked: Improved Current Ratio!`;
-            }
-        }
-
-        res.json({
-            userBalanceSheet: company,
-            realBalanceSheet: {
-                name: ticker.toUpperCase(),
-                year: nextYear,
-                income: realData.netIncome,
-                revenue: realData.revenue,
-                profit: realData.grossProfit,
-                assets: realData.totalAssets,
-                liabilities: realData.totalLiabilities,
-                shareholdersEquity: realData.totalStockholdersEquity,
-                operatingIncome: realData.operatingIncome,
-                depreciation: realData.depreciationAndAmortization,
-                amortization: realData.depreciationAndAmortization,
-                stockPrice: realData.stockPrice || 0,
-                cost: realData.costOfRevenue, // Add cost field
-                currentRatio: realCurrentRatio,
-                netProfitMargin: realNetProfitMargin,
-                ROA: realROA,
-            },
-            userFinancialRatios: {
-                currentRatio: userCurrentRatio,
-                netProfitMargin: userNetProfitMargin,
-                ROA: userROA,
-            },
-            previousCurrentRatio,
-            currentRatioAchievement,
-        });
+      }
+  
+      res.json({
+        userBalanceSheet: company,
+        realBalanceSheet: {
+          ...realData,
+          currentRatio: realCurrentRatio,
+          netProfitMargin: realNetProfitMargin,
+          ROA: realROA,
+        },
+        userFinancialRatios: {
+          currentRatio: userCurrentRatio,
+          netProfitMargin: userNetProfitMargin,
+          ROA: userROA,
+        },
+        previousCurrentRatio,
+        currentRatioAchievement,
+      });
     } catch (error) {
-        console.error('Error fetching real company balance sheet:', error.message);
-        res.status(500).json({ error: 'Failed to fetch financial data' });
+      console.error('Error fetching real company balance sheet:', error.message);
+      res.status(500).json({ error: 'Failed to fetch financial data' });
     }
-});
+  });
+  
+  
+  
 
-router.post('/submit-calculations/:companyId', async (req, res) => {
+router.post('/submit-calculations/:userId', async (req, res) => {
     try {
-        const { companyId } = req.params;
+        const { userId } = req.params;
         const { userCurrentRatio, userNetProfitMargin, userROA } = req.body;
 
-        const company = await Company.findById(companyId);
+        const company = await Company.findById(userId);
         if (!company) return res.status(404).json({ msg: 'Company not found' });
 
         const nextYear = company.currentYear + 1;
@@ -339,29 +399,37 @@ router.post('/submit-calculations/:companyId', async (req, res) => {
 });
 
 // Fetch player stats
-router.get('/player-stats/:companyId', async (req, res) => {
+router.get('/player-stats/:userId', async (req, res) => {
     try {
-        const { companyId } = req.params;
-        const company = await Company.findById(companyId);
-        if (!company) return res.status(404).json({ msg: 'Company not found' });
-
-        res.json(company);
+      const { userId } = req.params;
+      console.log('Fetching company stats for userId:', userId);
+      
+      // Use findOne() to query by the stored userId field
+      const company = await Company.findOne({ userId: userId });
+      if (!company) {
+        console.log('No company found for userId:', userId);
+        return res.status(404).json({ msg: 'Player company not found' });
+      }
+      
+      console.log('Found company:', company);
+      res.json(company);
     } catch (error) {
-        console.error('Error fetching player stats:', error.message);
-        res.status(500).json({ error: 'Failed to fetch player stats' });
+      console.error('Error fetching player stats:', error.message);
+      res.status(500).json({ error: 'Failed to fetch player stats' });
     }
-});
+  });
+
 
 // Handle quiz questions
-router.post('/quiz/:companyId', async (req, res) => {
+router.post('/quiz/:userId', async (req, res) => {
     try {
-        const { companyId } = req.params;
+        const { userId } = req.params;
         const { questionId, answer } = req.body;
 
         // Assume you have a function to validate the answer
         const isCorrect = validateAnswer(questionId, answer);
 
-        const company = await Company.findById(companyId);
+        const company = await Company.findById(userId);
         if (!company) return res.status(404).json({ msg: 'Company not found' });
 
         if (isCorrect) {

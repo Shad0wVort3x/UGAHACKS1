@@ -2,12 +2,15 @@ import React, { useState, useContext, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { UserContext } from './UserContext';
+import GameScenario from './GameScenario';
 import './CompanyButtons.css';
 
 const CompanyButtons = () => {
   const { user } = useContext(UserContext);
   const [ticker, setTicker] = useState('');
   const [companyData, setCompanyData] = useState(null);
+  const [event, setEvent] = useState(null);
+  const [eventsCompleted, setEventsCompleted] = useState(0);
   const fileInput = useRef(null);
   const navigate = useNavigate();
 
@@ -17,21 +20,60 @@ const CompanyButtons = () => {
 
   const handleSelectCompany = async () => {
     try {
-      console.log(`Fetching company data for ${ticker} for user ${user.id}`);
-  
-      const response = await axios.get(`http://localhost:3001/api/financials/initialize-company/${ticker}/${user.id}`);
-  
-      console.log("API Response:", response.data); // Debugging
-      if (!response.data.success) {
-        console.error("API Error:", response.data.msg);
-        alert("Failed to fetch company data. Please check your ticker symbol and try again.");
-        return;
-      }
-  
-      setCompanyData(response.data.companyData);
+        console.log(`Fetching company data for ${ticker} for user ${user.id}`);
+
+        const response = await axios.get(`http://localhost:3001/api/financials/initialize-company/${ticker}/${user.id}`);
+
+        console.log("API Response:", response.data);
+        if (!response.data.success) {
+            console.error("API Error:", response.data.msg);
+            alert("Failed to fetch company data. Please check your ticker symbol and try again.");
+            return;
+        }
+
+        setCompanyData(response.data.companyData);
+
+        // Ensure we wait for the event before rendering the game
+        const eventResponse = await axios.get('http://localhost:3001/api/events/generate-event');
+        setEvent(eventResponse.data);
+
+        navigate("/game"); // Move to game screen only when data is ready
     } catch (error) {
-      console.error("Error fetching company data:", error.response?.data || error.message);
-      alert("Failed to fetch company data. Please try again.");
+        console.error("Error fetching company data:", error.response?.data || error.message);
+        alert("Failed to fetch company data. Please try again.");
+    }
+};
+
+
+  const generateEvent = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/api/events/generate-event');
+      setEvent(response.data);
+    } catch (error) {
+      console.error('Error generating event:', error);
+    }
+  };
+
+  const handleChoice = async (choiceIndex) => {
+    try {
+      const response = await axios.put('http://localhost:3001/api/events/apply-event', {
+        choiceIndex,
+        event,
+      });
+
+      setCompanyData(response.data.company);
+      setEventsCompleted(eventsCompleted + 1);
+
+      if (eventsCompleted < 4) {
+        await generateEvent();
+      } else {
+        // Handle end of year logic here
+        console.log('End of year');
+        setEventsCompleted(0); // Reset events for the next year
+        // Perform year-end comparison here
+      }
+    } catch (error) {
+      console.error('Error applying event:', error);
     }
   };
 
@@ -80,6 +122,9 @@ const CompanyButtons = () => {
           <p><strong>Amortization:</strong> {companyData.amortization}</p>
           <p><strong>Stock Price:</strong> {companyData.stockPrice}</p>
         </div>
+      )}
+      {event && (
+        <GameScenario event={event} handleChoice={handleChoice} />
       )}
     </div>
   );

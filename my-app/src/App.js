@@ -22,9 +22,7 @@ function AppContent() {
         <Route path="/tutorial" element={<Tutorial />} />
         <Route path="/game" element={<GameWindow />} />
         <Route path="/" element={isLoggedIn ? <CompanyButtons /> : <Login />} />
-
-        <Route path="/game" element={<GameWindow />} />
-        </Routes>
+      </Routes>
       <Footer />
     </div>
   );

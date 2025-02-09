@@ -1,54 +1,88 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 import GameFooter from './GameFooter';
-import './GameWindow.css';
 import CompanyStats from './CompanyStats';
-import GameScenario from './GameScenario'; // Corrected import
+import GameScenario from './GameScenario';
 import GameQuiz from './GameQuiz';
+import YearEndComparison from './YearEndComparison'; // Added for year-end transition
+import { UserContext } from './UserContext'; // Import user context
+import './GameWindow.css';
 
-class GameWindow extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      // Add input values here
-      totalAssets: null, // Input required
-      totalLiabilities: null, // Input required
-      totalEquity: null, // Input required
-      revenue: null, // Input required
-      cost: null, // Input required
-      netIncome: null, // Input required
-      currentRatio: null, // Input required
-      netProfitMargin: null, // Input required
-      roa: null, // Input required
-    };
-  }
+const GameWindow = () => {
+  const { user } = useContext(UserContext); // Get userId from context
+  const userId = user?.id;
+  const [event, setEvent] = useState(null);
+  const [eventsCompleted, setEventsCompleted] = useState(0);
+  const [companyData, setCompanyData] = useState(null);
+  const [gameOver, setGameOver] = useState(false);
 
-  render() {
-    const {
-      totalAssets,
-      totalLiabilities,
-      totalEquity,
-      revenue,
-      cost,
-      netIncome,
-      currentRatio,
-      netProfitMargin,
-      roa,
-    } = this.state;
+  useEffect(() => {
+    if (userId) {
+      fetchCompanyData();
+      generateEvent();
+    }
+  }, [userId]); // Ensure it fetches only when userId is available
 
-    return (
-      <div>
-        <GameScenario /> {/* Corrected component usage */}
-        <CompanyStats />
-        <GameQuiz />
+  const fetchCompanyData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3001/api/financials/player-stats/${userId}`);
+      setCompanyData(response.data);
+    } catch (error) {
+      console.error('Error fetching company data:', error);
+    }
+  };
 
-        <div className="game-scenario">
-          <p>{/* Add game scenario description here */}</p>
-        </div>
-        
-        <GameFooter />
-      </div>
-    );
-  }
-}
+  const generateEvent = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/api/events/generate-event');
+      setEvent(response.data);
+    } catch (error) {
+      console.error('Error generating event:', error);
+    }
+  };
+
+  const handleChoice = async (choiceIndex) => {
+    try {
+      const response = await axios.put('http://localhost:3001/api/events/apply-event', {
+        userId, // Send userId to modify correct player stats
+        choiceIndex,
+        event
+      });
+  
+      setCompanyData(response.data.company);
+      
+      const newEventsCount = eventsCompleted + 1;
+      setEventsCompleted(newEventsCount);
+  
+      if (newEventsCount < 4) { // Note: if you want 4 events per year, check newEventsCount < 4
+        generateEvent();
+      } else {
+        console.log('End of year reached');
+        setGameOver(true); // Trigger year-end comparison screen
+      }
+    } catch (error) {
+      console.error('Error applying event:', error);
+    }
+  };
+  
+
+  return (
+    <div className="game-window">
+      <h1>Trust-Gamify</h1>
+
+      {!gameOver ? (
+  <>
+          <CompanyStats company={companyData} />
+          {event && <GameScenario event={event} handleChoice={handleChoice} />}
+        </>
+      ) : (
+        // Pass the ticker from companyData (if available) to YearEndComparison
+        <YearEndComparison userId={userId} ticker={companyData?.name || 'WMT'} />
+      )}
+
+      <GameFooter />
+    </div>
+  );
+};
 
 export default GameWindow;
