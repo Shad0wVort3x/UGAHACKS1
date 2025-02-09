@@ -7,6 +7,7 @@ const financialRoutes = require('./routes/financials');
 const eventRoutes = require('./routes/events');
 const registerRouter = require('./routes/register');
 const loginRouter = require('./routes/login');
+const fetchUsersRouter = require('./routes/fetchUsers');
 
 // Enable CORS for requests from port 3000 (frontend)
 app.use(cors({
@@ -14,7 +15,6 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow necessary methods
     credentials: true, // Include credentials if needed
 }));
-
 app.use(express.json());
 
 // Use environment variable for MongoDB URI
@@ -30,6 +30,7 @@ app.use('/api/financials', financialRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/register', registerRouter);
 app.use('/api/login', loginRouter);
+app.use('/api/fetchUsers', fetchUsersRouter); // Use the fetchUsersRouter
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
