@@ -1,0 +1,38 @@
+.company-stats {
+  font-family: 'Arial, sans-serif';
+  padding: 20px;
+  max-width: 600px;
+  position: absolute;
+  top: 100px; /* Adjust the top position to be exactly under the header */
+  right: 20px; /* Adjust the right position as needed */
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.5); /* Thin white border */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0); /* Fully transparent background */
+}
+
+.company-stats h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.company-stats, .game-scenario, .leaderboard {
+  margin-bottom: 20px;
+}
+
+.company-stats h2, .game-scenario h2, .leaderboard h2 {
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.company-stats p, .game-scenario p, .leaderboard p {
+  line-height: 1.6;
+  margin: 10px 0;
+  color: #555;
+}
+
+.company-stats strong {
+  color: #000;
+}
