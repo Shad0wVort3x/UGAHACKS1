@@ -1,8 +1,8 @@
-// src/App.js
 import React from 'react';
 import GameFooter from './GameFooter';
+import './GameWindow.css';
 
-class TrustGamify extends React.Component {
+class GameWindow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -33,7 +33,7 @@ class TrustGamify extends React.Component {
     } = this.state;
 
     return (
-      <div className="trust-gamify-container">
+      <div className="game-window">
         <h1>Trust-Gamify</h1>
 
         <div className="company-stats">
@@ -43,8 +43,6 @@ class TrustGamify extends React.Component {
           <p><strong>Total Equity:</strong> {totalEquity !== null ? `$${totalEquity.toLocaleString()}` : 'Input required'}</p>
           <p><strong>Revenue:</strong> {revenue !== null ? `$${revenue.toLocaleString()}` : 'Input required'}</p>
           <p><strong>Cost:</strong> {cost !== null ? `$${cost.toLocaleString()}` : 'Input required'}</p>
-
-          // quiz portion
           <p><strong>Net Income:</strong> {netIncome !== null ? `$${netIncome.toLocaleString()}` : 'Input required'}</p>
           <p><strong>Current Ratio:</strong> {currentRatio !== null ? currentRatio : 'Input required'}</p>
           <p><strong>Net Profit Margin:</strong> {netProfitMargin !== null ? `${netProfitMargin}%` : 'Input required'}</p>
@@ -62,4 +60,4 @@ class TrustGamify extends React.Component {
   }
 }
 
-export default TrustGamify;
+export default GameWindow;

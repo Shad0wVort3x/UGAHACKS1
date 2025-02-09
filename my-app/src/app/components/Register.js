@@ -3,7 +3,7 @@ import { FaTimes } from 'react-icons/fa';
 import { motion as m } from "framer-motion";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import UserContext from './UserContext';
+import { UserContext } from './UserContext';
 import './Register.css';
 
 function Register(props) {
@@ -107,3 +107,4 @@ function Register(props) {
 }
 
 export default Register;
+  

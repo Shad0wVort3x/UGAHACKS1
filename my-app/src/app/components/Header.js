@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './Header.css';
 import Login from './Login';
 import Register from './Register';
-import UserContext from './UserContext';
+import { UserContext } from './UserContext';
 
 export default function Header({ logoutHandler }) {
   const { isLoggedIn, setIsLoggedIn, setUser } = useContext(UserContext);

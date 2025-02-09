@@ -17,18 +17,13 @@ function AppContent() {
   return (
     <div className="App">
       <Header />
-      {isLoggedIn && (
-        <div className="ticker-container">
-          <CompanyButtons />
-        </div>
-      )}
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/tutorial" element={<Tutorial />} />
+        <Route path="/game" element={<GameWindow />} />
         <Route path="/" element={isLoggedIn ? <CompanyButtons /> : <Login />} />
         <Route path="/" element={<HomeWindow />} />
-        <Route path="/game" element={<GameWindow />} />
       </Routes>
       <Footer />
     </div>
