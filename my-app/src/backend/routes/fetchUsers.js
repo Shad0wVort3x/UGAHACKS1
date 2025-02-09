@@ -8,7 +8,7 @@ const router = express.Router();
  * Route: Update a user's profile
  * Requires Authentication
  */
-router.put('/users/update/:id', auth, async (req, res) => {
+router.put('/', auth, async (req, res) => {
   const targetUserId = req.params.id;
 
   try {
@@ -50,7 +50,7 @@ router.put('/users/update/:id', auth, async (req, res) => {
  * Route: Get a specific user's profile
  * Requires Authentication
  */
-router.get('/users', auth, async (req, res) => {
+router.get('/', auth, async (req, res) => { // Corrected endpoint
   try {
     console.log('Authenticated user ID:', req.user);
     const user = await User.findById(req.user);
@@ -61,7 +61,7 @@ router.get('/users', auth, async (req, res) => {
     console.log('Fetched user data:', user);
 
     res.json({
-        id: user._id,
+      id: user._id,
       name: user.name,
       email: user.email,
     });

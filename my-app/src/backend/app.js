@@ -7,6 +7,7 @@ const financialRoutes = require('./routes/financials');
 const eventRoutes = require('./routes/events');
 const registerRouter = require('./routes/register');
 const loginRouter = require('./routes/login');
+const userRouter = require('./routes/fetchUsers'); // Corrected path
 
 // Enable CORS for requests from port 3000 (frontend)
 app.use(cors({
@@ -29,6 +30,7 @@ app.use('/api/financials', financialRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/register', registerRouter);
 app.use('/api/login', loginRouter);
+app.use('/api/users', userRouter); // Corrected path
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
