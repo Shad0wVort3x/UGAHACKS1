@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
   resetPasswordExpires: { type: Date },
   createdAt: { type: Date, default: Date.now },
   profilePicture: { type: String, default: '/default-profile.jpg' }, // Ensure default profile picture is .jpg
+  Company: { type: String, required: true },
 });
 
 const User = mongoose.model('User', userSchema);

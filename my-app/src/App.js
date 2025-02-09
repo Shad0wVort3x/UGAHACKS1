@@ -9,6 +9,7 @@ import Register from './app/components/Register';
 import Tutorial from './app/components/Tutorial';
 import { Route, Routes } from 'react-router-dom';
 import GameWindow from './app/components/GameWindow';
+import Profile from './app/components/Profile';
 
 function AppContent() {
   const { isLoggedIn } = useContext(UserContext);
@@ -22,7 +23,9 @@ function AppContent() {
         <Route path="/tutorial" element={<Tutorial />} />
         <Route path="/game" element={<GameWindow />} />
         <Route path="/" element={isLoggedIn ? <CompanyButtons /> : <Login />} />
-      </Routes>
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/game" element={<GameWindow />} />
+        </Routes>
       <Footer />
     </div>
   );

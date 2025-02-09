@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Footer.css';
 
-const Footer = () => {
+const Footer = ({ onLeaderboardClick }) => {
   const [playClicked, setPlayClicked] = useState(false);
   const navigate = useNavigate();
 
@@ -21,7 +21,7 @@ const Footer = () => {
           <button className="footer-button">Option 2</button>
         </>
       )}
-      <button className="footer-button">Leaderboard</button>
+      <button className="footer-button" onClick={onLeaderboardClick}>Leaderboard</button>
     </div>
   );
 };
