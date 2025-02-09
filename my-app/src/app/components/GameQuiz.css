@@ -1,0 +1,17 @@
+.game-quiz {
+    position: absolute;
+    bottom: 20px; /* Adjust the bottom position as needed */
+    left: 20px; /* Adjust the left position as needed */
+    width: calc(100% - 40px); /* Adjust the width as needed */
+    text-align: left;
+    font-family: 'Arial, sans-serif';
+    color: #333;
+  }
+  
+  .quiz-box {
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Thin white border */
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
