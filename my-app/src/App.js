@@ -23,7 +23,7 @@ function AppContent() {
         <Route path="/tutorial" element={<Tutorial />} />
         <Route path="/game" element={<GameWindow />} />
         <Route path="/" element={isLoggedIn ? <CompanyButtons /> : <Login />} />
-        <Route path="/profile" element={<Profile />} />     
+        <Route path="/profile" element={<Profile />} />            
          </Routes>
       <Footer />
     </div>
