@@ -1,0 +1,28 @@
+/* src/App.css */
+.company-stats-container {
+    font-family: 'Arial, sans-serif';
+    padding: 20px;
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: left;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+  }
+  
+  .company-stats-container h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .company-stats-container p {
+    line-height: 1.6;
+    margin: 10px 0;
+    color: #555;
+  }
+  
+  .company-stats-container strong {
+    color: #000;
+  }
