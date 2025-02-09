@@ -89,42 +89,43 @@ router.get('/generate-event', async (req, res) => {
 });
 
 // Apply AI-generated event
+// In events.js, your apply-event route
 router.put('/apply-event', async (req, res) => {
     try {
-        const { userId, choiceIndex, event } = req.body;
-        const company = await Company.findOne({ userId });
-
-        if (!company) return res.status(404).json({ msg: 'Player’s company data not found' });
-
-        const choice = event.choices[choiceIndex];
-
-        // ✅ Apply event impact
-        company.operatingIncome *= choice.impact.operatingIncome || 1;
-        company.depreciation *= choice.impact.depreciation || 1;
-        company.amortization *= choice.impact.amortization || 1;
-        company.income *= choice.impact.income || 1;
-        company.revenue *= choice.impact.revenue || 1;
-        company.profit *= choice.impact.profit || 1;
-        company.assets *= choice.impact.assets || 1;
-        company.liabilities *= choice.impact.liabilities || 1;
-        company.shareholdersEquity *= choice.impact.shareholdersEquity || 1;
-        company.sustainabilityMetrics *= choice.impact.sustainabilityMetrics || 1;
-
-        company.eventsCompleted += 1;
-
-        // ✅ Move to next year after 4 events
-        if (company.eventsCompleted >= 4) {
-            company.currentYear += 1;
-            company.eventsCompleted = 0;
-        }
-
-        await company.save();
-        res.json({ msg: "Event applied!", company, event, choice });
+      const { userId, choiceIndex, event } = req.body;
+      const company = await Company.findOne({ userId });
+      if (!company) return res.status(404).json({ msg: 'Player company not found' });
+  
+      const choice = event.choices[choiceIndex];
+  
+      // Update all fields
+      company.operatingIncome *= choice.impact.operatingIncome || 1;
+      company.depreciation *= choice.impact.depreciation || 1;
+      company.amortization *= choice.impact.amortization || 1;
+      company.income *= choice.impact.income || 1;
+      company.revenue *= choice.impact.revenue || 1;
+      company.profit *= choice.impact.profit || 1;
+      company.assets *= choice.impact.assets || 1;
+      company.liabilities *= choice.impact.liabilities || 1;
+      company.shareholdersEquity *= choice.impact.shareholdersEquity || 1;
+      company.sustainabilityMetrics *= choice.impact.sustainabilityMetrics || 1;
+  
+      company.eventsCompleted += 1;
+  
+      if (company.eventsCompleted >= 4) {
+        company.currentYear += 1;
+        company.eventsCompleted = 0;
+      }
+  
+      await company.save();
+      res.json({ msg: "Event applied!", company, event, choice });
     } catch (error) {
-        console.error('Error applying event:', error);
-        res.status(500).json({ error: 'Failed to apply event' });
+      console.error('Error applying event:', error);
+      res.status(500).json({ error: 'Failed to apply event' });
     }
-});
+  });
+  
+  
 
 
 

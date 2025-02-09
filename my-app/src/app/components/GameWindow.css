@@ -1,8 +1,9 @@
 .game-window{
-    position: absolute; /* Position the box absolutely within the game window */
+    position: right; /* Position the box absolutely within the game window */
      /* Distance from the top */
     right: 20px; /* Distance from the right */
-    width: 300px; /* Adjust the width as needed */
+    width: 600px; /* Adjust the width as needed */
+     /* Adjust the length as needed */
     padding: 20px;
     background-color: transparent; /* White background */
     border-radius: 10px; /* Rounded corners */

@@ -72,13 +72,13 @@ const GameWindow = () => {
 
       {!gameOver ? (
   <>
-          <CompanyStats company={companyData} />
-          {event && <GameScenario event={event} handleChoice={handleChoice} />}
-        </>
-      ) : (
-        // Pass the ticker from companyData (if available) to YearEndComparison
-        <YearEndComparison userId={userId} ticker={companyData?.name || 'WMT'} />
-      )}
+    <CompanyStats company={companyData} />
+    {event && <GameScenario event={event} handleChoice={handleChoice} />}
+  </>
+) : (
+  // Pass the ticker from companyData (if available) to YearEndComparison
+  <YearEndComparison userId={userId} ticker={companyData?.name || 'WMT'} />
+)}
 
       <GameFooter />
     </div>

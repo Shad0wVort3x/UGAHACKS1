@@ -13,7 +13,7 @@ const upload = multer({ dest: 'uploads/' });
 router.get('/initialize-company/:ticker/:userId', async (req, res) => {
     try {
         const { ticker, userId } = req.params;
-        const year = 2015; // Default start year
+        const year = 2019; // Default start year
         console.log(`Fetching balance sheet for ${ticker} in year ${year} for user ${userId}`);
 
         const balanceSheetUrl = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?apikey=${FMP_API_KEY}`;
@@ -111,7 +111,7 @@ router.get('/initialize-company/:ticker/:userId', async (req, res) => {
 router.get('/initialize-company/:ticker/:userId', async (req, res) => {
     try {
         const { ticker, userId } = req.params;
-        const year = 2020; // Start from 2020
+        const year = 2019; 
         console.log(`Fetching balance sheet for ${ticker} in year ${year} for user ${userId}`);
 
         const balanceSheetUrl = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?apikey=${FMP_API_KEY}`;
@@ -241,27 +241,23 @@ router.put('/apply-event/:userId', async (req, res) => {
 router.get('/year-end-comparison/:userId/:ticker', async (req, res) => {
     try {
       const { userId, ticker } = req.params;
-  
-      // Retrieve the player's company record by userId
       const company = await Company.findOne({ userId: userId });
       if (!company) return res.status(404).json({ msg: 'Player company not found' });
   
-      // Next year we want to compare against
+      // Next year to compare against
       const nextYear = company.currentYear + 1;
   
-      // Build the API URLs for balance sheet, income statement, and cash flow
+      // Build API URLs for balance sheet, income statement, and cash flow
       const bsUrl = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?apikey=${FMP_API_KEY}`;
       const isUrl = `https://financialmodelingprep.com/api/v3/income-statement/${ticker}?apikey=${FMP_API_KEY}`;
       const cfUrl = `https://financialmodelingprep.com/api/v3/cash-flow-statement/${ticker}?apikey=${FMP_API_KEY}`;
   
-      // Fetch all data in parallel
       const [bsResponse, isResponse, cfResponse] = await Promise.all([
         axios.get(bsUrl),
         axios.get(isUrl),
         axios.get(cfUrl)
       ]);
   
-      // For each, try to find a record for nextYear; if not found, fall back to the most recent record
       let bsData = bsResponse.data.find(item => item.calendarYear === nextYear);
       if (!bsData) {
         console.log(`No balance sheet data for year ${nextYear}. Using fallback data.`);
@@ -280,35 +276,33 @@ router.get('/year-end-comparison/:userId/:ticker', async (req, res) => {
         cfData = cfResponse.data.sort((a, b) => b.calendarYear - a.calendarYear)[0];
       }
   
-      // Merge the data from the three responses into one realData object.
-      // Note: Some fields may come only from one source.
+      // Merge the data into one object.
       const realData = {
         name: ticker.toUpperCase(),
         year: bsData ? bsData.calendarYear : nextYear,
-        income: isData ? isData.netIncome : 0,                      // from income statement
-        revenue: isData ? isData.revenue : 0,                        // from income statement
-        profit: isData ? isData.grossProfit : 0,                     // from income statement
-        assets: bsData ? bsData.totalAssets : 0,                     // from balance sheet
-        liabilities: bsData ? bsData.totalLiabilities : 0,           // from balance sheet
-        shareholdersEquity: bsData ? bsData.totalStockholdersEquity : 0, // from balance sheet
-        operatingIncome: isData ? isData.operatingIncome : 0,        // from income statement
-        depreciation: cfData ? cfData.depreciationAndAmortization : 0, // from cash flow
-        amortization: cfData ? cfData.depreciationAndAmortization : 0, // from cash flow (if same)
-        stockPrice: bsData && bsData.stockPrice ? bsData.stockPrice : 0, // if available; otherwise 0
-        cost: isData ? isData.costOfRevenue : 0,                     // from income statement
+        income: isData ? isData.netIncome : 0,
+        revenue: isData ? isData.revenue : 0,
+        profit: isData ? isData.grossProfit : 0,
+        assets: bsData ? bsData.totalAssets : 0,
+        liabilities: bsData ? bsData.totalLiabilities : 0,
+        shareholdersEquity: bsData ? bsData.totalStockholdersEquity : 0,
+        operatingIncome: isData ? isData.operatingIncome : 0,
+        depreciation: cfData ? cfData.depreciationAndAmortization : 0,
+        amortization: cfData ? cfData.depreciationAndAmortization : 0,
+        cost: isData ? isData.costOfRevenue : 0,
       };
   
-      // Calculate financial ratios for the real company using bsData and isData
+      // Calculate ratios for real data:
       const realCurrentRatio = bsData ? bsData.totalAssets / bsData.totalLiabilities : 0;
       const realNetProfitMargin = isData ? (isData.revenue - isData.costOfRevenue) / isData.revenue : 0;
       const realROA = bsData ? (isData ? isData.netIncome / bsData.totalAssets : 0) : 0;
   
-      // Calculate financial ratios for the player's company (stored in company)
+      // Calculate ratios for the user's company:
       const userCurrentRatio = company.assets / company.liabilities;
       const userNetProfitMargin = (company.revenue - company.cost) / company.revenue;
       const userROA = company.income / company.assets;
   
-      // (Optional) Compare with previous year data to award an achievement
+      // (Optional) Compare with previous year to award an achievement
       let previousCurrentRatio = null;
       let currentRatioAchievement = null;
       const previousYearData = await Company.findOne({ name: company.name, year: company.currentYear });
@@ -332,14 +326,19 @@ router.get('/year-end-comparison/:userId/:ticker', async (req, res) => {
           netProfitMargin: userNetProfitMargin,
           ROA: userROA,
         },
+        realFinancialRatios,
         previousCurrentRatio,
         currentRatioAchievement,
       });
+      console.log("Real Company Current Ratio:", realCurrentRatio);
+console.log("Real Company Net Profit Margin:", realNetProfitMargin);
+
     } catch (error) {
       console.error('Error fetching real company balance sheet:', error.message);
       res.status(500).json({ error: 'Failed to fetch financial data' });
     }
   });
+  
   
   
   

@@ -1,0 +1,62 @@
+/* YearEndComparison.css */
+
+.year-end-comparison {
+    max-width: 800px;         /* Limit the container width */
+    margin: 20px auto;        /* Center it horizontally with some top/bottom spacing */
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: auto;           /* Ensure content doesn't overflow the container */
+  }
+  
+  .year-end-comparison h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+  }
+  
+  .year-end-comparison .stats-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+  }
+  
+  .year-end-comparison .stats-box {
+    flex: 1;
+    min-width: 300px;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #ccc;
+  }
+  
+  .year-end-comparison .stats-box h3 {
+    margin-top: 0;
+    font-size: 1.4em;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .year-end-comparison .stats-box p {
+    margin: 5px 0;
+    font-size: 1em;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+  
+  /* For very small screens, stack the boxes vertically */
+  @media (max-width: 600px) {
+    .year-end-comparison .stats-section {
+      flex-direction: column;
+      align-items: center;
+    }
+    .year-end-comparison .stats-box {
+      flex: 1 1 100%;
+      max-width: 100%;
+    }
+  }

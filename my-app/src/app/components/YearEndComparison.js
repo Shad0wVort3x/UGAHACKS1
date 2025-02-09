@@ -1,6 +1,7 @@
 // YearEndComparison.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './YearEndComparison.css';
 
 const YearEndComparison = ({ userId, ticker }) => {
   const [comparisonData, setComparisonData] = useState(null);
@@ -28,49 +29,54 @@ const YearEndComparison = ({ userId, ticker }) => {
     return <div>Loading comparison data...</div>;
   }
 
-  const { userBalanceSheet, realBalanceSheet, userFinancialRatios, currentRatioAchievement } = comparisonData;
+  const { userBalanceSheet, realBalanceSheet, userFinancialRatios, realFinancialRatios, currentRatioAchievement } = comparisonData;
 
   return (
-    <div>
+    <div className="year-end-comparison">
       <h2>Year-End Comparison</h2>
-      <div>
-        <h3>Your Company Stats</h3>
-        <p><strong>Name:</strong> {userBalanceSheet.name}</p>
-        <p><strong>Income:</strong> {userBalanceSheet.income}</p>
-        <p><strong>Revenue:</strong> {userBalanceSheet.revenue}</p>
-        <p><strong>Profit:</strong> {userBalanceSheet.profit}</p>
-        <p><strong>Assets:</strong> {userBalanceSheet.assets}</p>
-        <p><strong>Liabilities:</strong> {userBalanceSheet.liabilities}</p>
-        <p><strong>Shareholders' Equity:</strong> {userBalanceSheet.shareholdersEquity}</p>
-        <p><strong>Operating Income:</strong> {userBalanceSheet.operatingIncome}</p>
-        <p><strong>Depreciation:</strong> {userBalanceSheet.depreciation}</p>
-        <p><strong>Amortization:</strong> {userBalanceSheet.amortization}</p>
-      </div>
-      <div>
-        <h3>Real Company Stats</h3>
-        <p><strong>Name:</strong> {realBalanceSheet.name}</p>
-        <p><strong>Year:</strong> {realBalanceSheet.year}</p>
-        <p><strong>Income:</strong> {realBalanceSheet.income}</p>
-        <p><strong>Revenue:</strong> {realBalanceSheet.revenue}</p>
-        <p><strong>Profit:</strong> {realBalanceSheet.profit}</p>
-        <p><strong>Assets:</strong> {realBalanceSheet.assets}</p>
-        <p><strong>Liabilities:</strong> {realBalanceSheet.liabilities}</p>
-        <p><strong>Shareholders' Equity:</strong> {realBalanceSheet.shareholdersEquity}</p>
-        <p><strong>Operating Income:</strong> {realBalanceSheet.operatingIncome}</p>
-        <p><strong>Depreciation:</strong> {realBalanceSheet.depreciation}</p>
-        <p><strong>Amortization:</strong> {realBalanceSheet.amortization}</p>
+      <div className="stats-section">
+        <div className="stats-box">
+          <h3>Your Company Stats</h3>
+          <p><strong>Name:</strong> {userBalanceSheet.name}</p>
+          <p><strong>Income:</strong> {userBalanceSheet.income}</p>
+          <p><strong>Revenue:</strong> {userBalanceSheet.revenue}</p>
+          <p><strong>Profit:</strong> {userBalanceSheet.profit}</p>
+          <p><strong>Assets:</strong> {userBalanceSheet.assets}</p>
+          <p><strong>Liabilities:</strong> {userBalanceSheet.liabilities}</p>
+          <p><strong>Shareholders' Equity:</strong> {userBalanceSheet.shareholdersEquity}</p>
+          <p><strong>Operating Income:</strong> {userBalanceSheet.operatingIncome}</p>
+          <p><strong>Depreciation:</strong> {userBalanceSheet.depreciation}</p>
+          <p><strong>Amortization:</strong> {userBalanceSheet.amortization}</p>
+        </div>
+        <div className="stats-box">
+          <h3>Real Company Stats</h3>
+          <p><strong>Name:</strong> {realBalanceSheet.name}</p>
+          <p><strong>Year:</strong> {realBalanceSheet.year}</p>
+          <p><strong>Income:</strong> {realBalanceSheet.income}</p>
+          <p><strong>Revenue:</strong> {realBalanceSheet.revenue}</p>
+          <p><strong>Profit:</strong> {realBalanceSheet.profit}</p>
+          <p><strong>Assets:</strong> {realBalanceSheet.assets}</p>
+          <p><strong>Liabilities:</strong> {realBalanceSheet.liabilities}</p>
+          <p><strong>Shareholders' Equity:</strong> {realBalanceSheet.shareholdersEquity}</p>
+          <p><strong>Operating Income:</strong> {realBalanceSheet.operatingIncome}</p>
+          <p><strong>Depreciation:</strong> {realBalanceSheet.depreciation}</p>
+          <p><strong>Amortization:</strong> {realBalanceSheet.amortization}</p>
+          <p><strong>Current Ratio:</strong> {realFinancialRatios?.currentRatio || 'N/A'}</p>
+          <p><strong>Net Profit Margin:</strong> {realFinancialRatios?.netProfitMargin || 'N/A'}</p>
+          <p><strong>ROA:</strong> {realFinancialRatios?.ROA || 'N/A'}</p>
+        </div>
       </div>
       {currentRatioAchievement && (
-        <div>
+        <div className="stats-box">
           <h3>Achievement</h3>
           <p>{currentRatioAchievement}</p>
         </div>
       )}
-      <div>
+      <div className="stats-box">
         <h3>User Financial Ratios</h3>
-        <p><strong>Current Ratio:</strong> {userFinancialRatios.currentRatio}</p>
-        <p><strong>Net Profit Margin:</strong> {userFinancialRatios.netProfitMargin}</p>
-        <p><strong>ROA:</strong> {userFinancialRatios.ROA}</p>
+        <p><strong>Current Ratio:</strong> {userFinancialRatios?.currentRatio || 'N/A'}</p>
+        <p><strong>Net Profit Margin:</strong> {userFinancialRatios?.netProfitMargin || 'N/A'}</p>
+        <p><strong>ROA:</strong> {userFinancialRatios?.ROA || 'N/A'}</p>
       </div>
     </div>
   );
