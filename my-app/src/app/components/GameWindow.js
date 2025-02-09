@@ -3,7 +3,6 @@ import axios from 'axios';
 import GameFooter from './GameFooter';
 import CompanyStats from './CompanyStats';
 import GameScenario from './GameScenario';
-import GameQuiz from './GameQuiz';
 import YearEndComparison from './YearEndComparison'; // Added for year-end transition
 import { UserContext } from './UserContext'; // Import user context
 import './GameWindow.css';
@@ -91,7 +90,6 @@ const GameWindow = () => {
         // Pass the ticker from companyData (if available) to YearEndComparison
         <YearEndComparison userId={userId} ticker={companyData?.name || 'WMT'} />
       )}
-
       <GameFooter />
     </div>
   );

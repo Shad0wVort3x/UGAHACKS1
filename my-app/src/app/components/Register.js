@@ -3,7 +3,7 @@ import { FaTimes } from 'react-icons/fa';
 import { motion as m } from "framer-motion";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from './UserContext';
+import { UserContext } from './UserContext'; // Use named import
 import './Register.css';
 
 function Register(props) {
@@ -16,8 +16,6 @@ function Register(props) {
     name: '',
   });
 
-  const [error, setError] = useState(null);
-
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
@@ -28,17 +26,19 @@ function Register(props) {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3001/api/register', formData);
+      const response = await axios.post('http://localhost:3001/api/register', formData);
+      const userData = response.data;
 
-      // Show alert after successful registration
-      alert('Registration successful! Please log in to access your account.');
+      // ✅ Correctly update UserContext
+      setUser(userData.user);
+      setIsLoggedIn(true);
+      localStorage.setItem('userData', JSON.stringify(userData));
 
-      // Redirect to login page after successful registration
-      navigate('/login');
+      navigate('/'); // Redirect to homepage
       props.setTrigger(false); // Close the registration modal
     } catch (err) {
       console.error('Registration failed: ', err);
-      setError(err.response?.data?.msg || 'Registration failed. Please try again.');
+      alert(err.response?.data?.msg || 'Registration failed. Please try again.');
     }
   };
 
@@ -99,7 +99,6 @@ function Register(props) {
           >
             Register
           </button>
-          {error && <p className="error">{error}</p>}
         </form>
         {props.children}
       </div>

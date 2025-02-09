@@ -51,7 +51,6 @@ const YearEndComparison = ({ userId, ticker }) => {
         <div className="stats-box">
           <h3>Real Company Stats</h3>
           <p><strong>Name:</strong> {realBalanceSheet.name}</p>
-          <p><strong>Year:</strong> {realBalanceSheet.year}</p>
           <p><strong>Income:</strong> {realBalanceSheet.income}</p>
           <p><strong>Revenue:</strong> {realBalanceSheet.revenue}</p>
           <p><strong>Profit:</strong> {realBalanceSheet.profit}</p>

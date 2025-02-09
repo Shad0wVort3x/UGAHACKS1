@@ -21,7 +21,6 @@ const Footer = () => {
           <button className="footer-button">Option 2</button>
         </>
       )}
-      <button className="footer-button">Leaderboard</button>
     </div>
   );
 };

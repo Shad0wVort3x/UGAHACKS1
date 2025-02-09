@@ -6,7 +6,7 @@ const parseBalanceSheet = require('../util/parseBalanceSheet');
 require('dotenv').config();
 
 const router = express.Router();
-const FMP_API_KEY = '1Wz7J5uxlHiV8OM3lZ4FHpwvBr6ohY2L'; // Hardcoded API key
+const FMP_API_KEY = 'YzLY925pTXIfQuxY3YfLwS7G9vdInQ4Q'; // Hardcoded API key
 const upload = multer({ dest: 'uploads/' });
 
 // Fetch and store only Year 0 balance sheet

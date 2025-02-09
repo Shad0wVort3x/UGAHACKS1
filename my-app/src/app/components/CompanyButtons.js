@@ -34,6 +34,7 @@ const CompanyButtons = () => {
 
         const response = await axios.get(`http://localhost:3001/api/financials/initialize-company/${ticker}/${userId}`);
 
+        
         console.log("API Response:", response.data);
         if (!response.data.success) {
             console.error("API Error:", response.data.msg);
